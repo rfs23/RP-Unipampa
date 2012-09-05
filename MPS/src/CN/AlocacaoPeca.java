@@ -6,67 +6,43 @@ import java.util.Collection;
 
 public class AlocacaoPeca extends Observable {
 
-	private Date dataInclusaoPeca;
+    private Date dataInclusaoPeca;
+    private int tempoVidaUtil;
+    private Divisao divisao;
+    private Peca Peca;
+    private Observable observable;
 
-	private int tempoVidaUtil;
+    public AlocacaoPeca(Peca Peca, int tempoVidaUtilRestante) {
+    }
 
-	private int codigo;
+    public void alterarPeca(Peca peca, int tempoVidaUtilRestante, Date dataInclusao) {
+    }
 
-	private Semeadora semeadora;
+    public Peca getPeca() {
+        return null;
+    }
 
-	private Divisao divisao;
+    public void subtraiVidaUtil(int desgaste) {
+    }
 
-	private ItemPeca itemPeca;
+    public int getPorcVidaUtil() {
+        return 0;
+    }
 
-	private Collection<DesgastePeca> desgastePeca;
+    public void setPorcVidaUtil(int porcVidaUtil) {
+    }
 
-	private SubstituicaoPeca substituicaoPeca;
+    public void setDataInclusaoPeca(Date data) {
+    }
 
-	private Collection<Manutencao> manutencao;
+    public void verificaVidaUtil(int vidaUtil) {
+    }
 
-	private Collection<Reparo> reparo;
+    public void setPeca(Peca peca) {
+    }
 
-	private Observable observable;
-
-	public AlocacaoPeca(ItemPeca itemPeca, int porcVidaUtil) {
-
-	}
-
-	public void alterarPeca(ItemPeca peca, int porcVidaUtil, Date data) {
-
-	}
-
-	public Peca getPeca() {
-		return null;
-	}
-
-	public void subtraiVidaUtil(int desgaste) {
-
-	}
-
-	public int getPorcVidaUtil() {
-		return 0;
-	}
-
-	public void setPorcVidaUtil(int porcVidaUtil) {
-
-	}
-
-	public void setDataInclusaoPeca(Date data) {
-
-	}
-
-	public void verificaVidaUtil(int vidaUtil) {
-
-	}
-
-	public void setPeca(ItemPeca peca) {
-
-	}
-
-	public void verificaTipo(ItemPeca peca) {
-
-	}
+    public void verificaTipo(Peca peca) {
+    }
 
     /**
      * @return the dataInclusaoPeca
@@ -90,17 +66,16 @@ public class AlocacaoPeca extends Observable {
     }
 
     /**
-     * @return the codigo
+     * @return the divisao
      */
-    public int getCodigo() {
-        return codigo;
+    public Divisao getDivisao() {
+        return divisao;
     }
 
     /**
-     * @param codigo the codigo to set
+     * @param divisao the divisao to set
      */
-    public void setCodigo(int codigo) {
-        this.codigo = codigo;
+    public void setDivisao(Divisao divisao) {
+        this.divisao = divisao;
     }
-
 }

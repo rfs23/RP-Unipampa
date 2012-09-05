@@ -75,7 +75,7 @@ public class Semeadora extends Observable {
         return null;
     }
     
-    public void sofrerSubstituicaoPeca(Date data, AlocacaoPeca pecaSubstituida, ItemPeca pecaSubstituta, int porcVidaUtil) {
+    public void sofrerSubstituicaoPeca(Date data, AlocacaoPeca pecaSubstituida, Peca pecaSubstituta, int porcVidaUtil) {
         
     }
     
@@ -139,17 +139,17 @@ public class Semeadora extends Observable {
     
     public void saveSemeadora() throws SQLException {
         
-        new DBSemeadora(AcessoPostgres.getInstance()).addSemeadora(this);
+        new DBSemeadora(AcessoPostgres.getInstance()).insertSemeadora(this);
     }
     
     public void removeSemeadora() throws SQLException {
         
-        new DBSemeadora(AcessoPostgres.getInstance()).excluirSemeadora(this.getIdentificacao());
+        new DBSemeadora(AcessoPostgres.getInstance()).deleteSemeadora(this.getIdentificacao());
     }
     
     public void removeSemeadora(int codSem) throws SQLException {
         
-        new DBSemeadora(AcessoPostgres.getInstance()).excluirSemeadora(codSem);
+        new DBSemeadora(AcessoPostgres.getInstance()).deleteSemeadora(codSem);
     }
 
     /**

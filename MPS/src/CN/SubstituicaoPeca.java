@@ -8,11 +8,11 @@ public class SubstituicaoPeca extends Manutencao {
 
 	private Manutencao manutencao;
 
-	private ItemPeca itemPeca;
+	private Peca itemPeca;
 
 	private AlocacaoPeca alocacaoPeca;
 
-	public void SubstituicaoPeca(Date data, AlocacaoPeca pecaSubstituida, ItemPeca pecaSubstituta, int vidaUtil) {
+	public void SubstituicaoPeca(Date data, AlocacaoPeca pecaSubstituida, Peca pecaSubstituta, int vidaUtil) {
 
 	}
 
