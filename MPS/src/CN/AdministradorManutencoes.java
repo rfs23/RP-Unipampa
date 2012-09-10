@@ -1,7 +1,7 @@
 package CN;
 
-import DB.AcessoBD;
-import DB.AcessoPostgres;
+import Repositório.AcessoBD;
+import Repositório.AcessoPostgres;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

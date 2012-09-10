@@ -1,7 +1,7 @@
 package CN;
 
-import DB.AcessoPostgres;
-import DB.DBSemeadora;
+import Repositório.AcessoPostgres;
+import Repositório.DBSemeadora;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;

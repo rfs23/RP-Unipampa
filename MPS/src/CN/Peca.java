@@ -6,10 +6,8 @@ import java.util.Map;
 
 public class Peca {
 
-    private int identificacao;
-    private String anoFabricacao;
+    private int identificacao;    
     private String fabricante;
-    private Date dataAquisicao;
     private TipoPeca tipo;
     private AdministradorManutencoes administradorManutencoes;
 
@@ -49,20 +47,6 @@ public class Peca {
     }
 
     /**
-     * @return the anoFabricacao
-     */
-    public String getAnoFabricacao() {
-        return anoFabricacao;
-    }
-
-    /**
-     * @param anoFabricacao the anoFabricacao to set
-     */
-    public void setAnoFabricacao(String anoFabricacao) {
-        this.anoFabricacao = anoFabricacao;
-    }
-
-    /**
      * @return the fabricante
      */
     public String getFabricante() {
@@ -76,19 +60,6 @@ public class Peca {
         this.fabricante = fabricante;
     }
 
-    /**
-     * @return the dataAquisicao
-     */
-    public Date getDataAquisicao() {
-        return dataAquisicao;
-    }
-
-    /**
-     * @param dataAquisicao the dataAquisicao to set
-     */
-    public void setDataAquisicao(Date dataAquisicao) {
-        this.dataAquisicao = dataAquisicao;
-    }
 
     /**
      * @return the tipo
