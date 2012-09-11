@@ -11,12 +11,12 @@ package Exceções;
 public class AtualizaçãoException extends RuntimeException {
 
     private String message;
-    private RuntimeException rtException;
+    private Exception exception;
 
-    public AtualizaçãoException(String message, RuntimeException rtException) {
+    public AtualizaçãoException(String message, Exception exception) {
 
         this.message = message;
-        this.rtException = rtException;
+        this.exception = exception;
     }
 
     public AtualizaçãoException(String message) {
@@ -30,8 +30,8 @@ public class AtualizaçãoException extends RuntimeException {
         return this.message;
     }
 
-    public RuntimeException getRTException() {
+    public Exception getException() {
 
-        return rtException;
+        return exception;
     }
 }

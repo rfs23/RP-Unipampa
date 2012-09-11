@@ -5,6 +5,7 @@
 package Repositório;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -20,7 +21,7 @@ public interface AcessoBD {
     
     String getSenha();
     
-    boolean executeSQL(String sql);
+    void executeSQL(String sql) throws SQLException;
   
-    ResultSet selectData(String sql);
+    ResultSet selectData(String sql) throws SQLException;
 }

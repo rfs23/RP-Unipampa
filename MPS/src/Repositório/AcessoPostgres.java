@@ -79,7 +79,7 @@ public class AcessoPostgres implements AcessoBD{
      * Realiza conexão com um banco de dados PostGres.
      * @return true se a conexão foi realizado com sucesso, ou false caso contrário.
      */
-    public boolean connect() {
+    public void connect() throws SQLException{
         
         try{
             
@@ -87,16 +87,13 @@ public class AcessoPostgres implements AcessoBD{
             
             con = DriverManager.getConnection(getDataBaseURL(), usuario, senha);
             
-            return true;
         }catch (SQLException sqle){
             
-            System.err.println("Não foi possível a conexão com o Banco de Dados");
-            sqle.printStackTrace();
-            return false;
+            sqle.setNextException(new SQLException("Não foi possível a conexão com o Banco de Dados"));
+            throw sqle;
         }catch (ClassNotFoundException cnfe){
             
             cnfe.printStackTrace();
-            return false;
         }
         
     }
@@ -105,17 +102,15 @@ public class AcessoPostgres implements AcessoBD{
      * Encerra a conexão com o banco de dados.
      * @return true se a desconexão foi concluída com sucesso, ou false caso contrário.
      */ 
-    public boolean disconnect() {
+    public void disconnect() throws SQLException{
         
         try{
             
             con.close();
-            return true;
         }catch (SQLException sqle){
             
-            System.err.println("Não foi possível encerrar a conexão");
-            sqle.printStackTrace();
-            return false;
+            sqle.setNextException(new SQLException("Não foi possível encerrar a conexão"));
+            //throw sqle;
         }
     }
 
@@ -126,7 +121,7 @@ public class AcessoPostgres implements AcessoBD{
      * @return Um objeto ResultSet contendo os dados obtidos pela consulta.
      */
     @Override
-    public ResultSet selectData(String sql) {
+    public ResultSet selectData(String sql) throws SQLException{
         
         connect();
         try{
@@ -136,9 +131,8 @@ public class AcessoPostgres implements AcessoBD{
             return result;
         }catch (SQLException sqle){
             
-            System.err.println("SQL Inválida");
-            sqle.printStackTrace();;
-            return null;
+            sqle.setNextException(new SQLException("SQL Inválida"));
+            throw sqle;
         }
     }
 
@@ -149,20 +143,19 @@ public class AcessoPostgres implements AcessoBD{
      * @param sql Instrução SQL a ser executada.
      * @return true se a instrução foi executada com sucesso ou false caso contrário.
      */
+    
     @Override
-    public boolean executeSQL(String sql) {
+    public void executeSQL(String sql) throws SQLException{
         
         connect();
         try{
             
             stm = con.createStatement();
             stm.executeUpdate(sql);
-            return true;
         }catch (SQLException sqle){
             
-            System.err.println("SQL Inválida");
-            sqle.printStackTrace();;
-            return false;
+            sqle.setNextException(new SQLException("SQL Inválida"));
+            throw sqle;
         }finally{
             
             disconnect();

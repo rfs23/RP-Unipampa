@@ -17,7 +17,7 @@ public class Semeadora extends Observable {
     private String marca;
     private int ano;
     private Date dataRegistro;
-    private Collection<Divisao> divisao;
+    private Map<Integer, Divisao> divisoes;
     private Collection<AlocacaoPeca> alocacaoPeca;
     private Collection<Atividade> atividade;
     private Collection<Manutencao> manutencao;
@@ -137,7 +137,7 @@ public class Semeadora extends Observable {
         return dataRegistro;
     }
     
-    public void saveSemeadora() throws SQLException {
+    /*public void saveSemeadora() throws SQLException {
         
         new DBSemeadora(AcessoPostgres.getInstance()).insertSemeadora(this);
     }
@@ -150,7 +150,7 @@ public class Semeadora extends Observable {
     public void removeSemeadora(int codSem) throws SQLException {
         
         new DBSemeadora(AcessoPostgres.getInstance()).deleteSemeadora(codSem);
-    }
+    }*/
 
     /**
      * @param identificacao the identificacao to set

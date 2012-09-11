@@ -17,7 +17,7 @@ public class AdministradorManutencoes {
         public boolean addSemeadora (Semeadora semeadora){
             
             AcessoBD adb = AcessoPostgres.getInstance();
-            adb.executeSQL("insert into semeadora values");
+            //adb.executeSQL("insert into semeadora values");
             return true;
         }
 

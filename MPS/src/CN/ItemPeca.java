@@ -15,6 +15,20 @@ public class ItemPeca {
     private int identificacao;
     private int AnoFab;
     private Date dataAquis;
+    private Peca peca;
+    
+    public ItemPeca(){
+    
+        this(0,0000, new Date(), new Peca());
+    }
+    
+    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca){
+        
+        this.identificacao = identificacao;
+        this.AnoFab = anoFab;
+        this.dataAquis = dataAquis;
+        this.peca = peca;
+    }
 
     /**
      * @return the identificacao
@@ -56,6 +70,20 @@ public class ItemPeca {
      */
     public void setDataAquis(Date dataAquis) {
         this.dataAquis = dataAquis;
+    }
+
+    /**
+     * @return the peca
+     */
+    public Peca getPeca() {
+        return peca;
+    }
+
+    /**
+     * @param peca the peca to set
+     */
+    public void setPeca(Peca peca) {
+        this.peca = peca;
     }
     
 }

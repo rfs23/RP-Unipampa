@@ -52,7 +52,7 @@ public class CadastroSemeadoras{
         CadastroSemeadoras.semeadoras.put(codSemeadora, semeadora);
     }
 
-    public Semeadora selectSemeadora(int codSemeadora) {
+    public Semeadora selectSemeadora(int codSemeadora) throws ConsultaException {
         
         if(CadastroSemeadoras.semeadoras.get(codSemeadora)==null){
             

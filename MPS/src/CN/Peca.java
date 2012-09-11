@@ -11,7 +11,16 @@ public class Peca {
     private TipoPeca tipo;
     private AdministradorManutencoes administradorManutencoes;
 
-    public Peca(String anoFabricacao, String fab, Date dataAquis, TipoPeca tipo) {
+    public Peca(int identificacao, String fabricante, TipoPeca tipo) {
+        
+        this.identificacao = identificacao;
+        this.fabricante = fabricante;
+        this.tipo = tipo;
+    }
+
+    Peca() {
+        
+        this(0,"",null);
     }
 
     public void setTipo(TipoPeca tipo) {

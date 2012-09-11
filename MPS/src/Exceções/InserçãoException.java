@@ -11,12 +11,12 @@ package Exceções;
 public class InserçãoException extends RuntimeException{
     
     private String message;
-    private RuntimeException rtException;
+    private Exception exception;
     
-    public InserçãoException(String message, RuntimeException rtException){
+    public InserçãoException(String message, Exception exception){
         
         this.message = message;
-        this.rtException = rtException;
+        this.exception = exception;
     }
     
     public InserçãoException(String message){
@@ -30,8 +30,8 @@ public class InserçãoException extends RuntimeException{
         return this.message;
     }
     
-    public RuntimeException getRTException(){
+    public Exception getRTException(){
         
-        return rtException;
+        return exception;
     }
 }

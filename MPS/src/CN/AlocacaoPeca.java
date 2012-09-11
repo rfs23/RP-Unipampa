@@ -1,24 +1,31 @@
 package CN;
 
-import java.util.Observable;
 import java.util.Date;
-import java.util.Collection;
+import java.util.Observable;
+
 
 public class AlocacaoPeca extends Observable {
 
-    private Date dataInclusaoPeca;
+    private Date dataInclusaoItemPeca;
     private int tempoVidaUtil;
     private Divisao divisao;
-    private Peca Peca;
+    private ItemPeca peca;
     private Observable observable;
 
-    public AlocacaoPeca(Peca Peca, int tempoVidaUtilRestante) {
+    public AlocacaoPeca(ItemPeca peca, int tempoVidaUtilRestante, Date dataInclusao) {
+        
+        
+    }
+    
+    public AlocacaoPeca(){
+        
+        this(null, 0, new Date());
     }
 
-    public void alterarPeca(Peca peca, int tempoVidaUtilRestante, Date dataInclusao) {
+    public void alterarItemPeca(ItemPeca peca, int tempoVidaUtilRestante, Date dataInclusao) {
     }
 
-    public Peca getPeca() {
+    public ItemPeca getItemPeca() {
         return null;
     }
 
@@ -32,23 +39,23 @@ public class AlocacaoPeca extends Observable {
     public void setPorcVidaUtil(int porcVidaUtil) {
     }
 
-    public void setDataInclusaoPeca(Date data) {
+    public void setDataInclusaoItemPeca(Date data) {
     }
 
     public void verificaVidaUtil(int vidaUtil) {
     }
 
-    public void setPeca(Peca peca) {
+    public void setItemPeca(ItemPeca peca) {
     }
 
-    public void verificaTipo(Peca peca) {
+    public void verificaTipo(ItemPeca peca) {
     }
 
     /**
-     * @return the dataInclusaoPeca
+     * @return the dataInclusaoItemPeca
      */
-    public Date getDataInclusaoPeca() {
-        return dataInclusaoPeca;
+    public Date getDataInclusaoItemPeca() {
+        return dataInclusaoItemPeca;
     }
 
     /**

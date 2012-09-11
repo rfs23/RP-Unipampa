@@ -5,6 +5,7 @@
 package CN;
 
 import Cadastro.CadastroSemeadoras;
+import Exceções.DeleçãoException;
 import Exceções.InserçãoException;
 import Repositório.AcessoBD;
 import Repositório.AcessoPostgres;
@@ -36,20 +37,24 @@ public class Teste {
             
             ie.getRTException().printStackTrace();
         }
-        
-        new CadastroSemeadoras(dbSem).deleteSemeadora(2);
-        
-        /*try {
-            new Semeadora("Case 100", "Case", 2005).saveSemeadora();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }*/
-        
-        /*try {
-            new Semeadora().removeSemeadora(9);
-        }catch(SQLException ex){
-            ex.printStackTrace();
-        }*/
+        try {
+            new CadastroSemeadoras(dbSem).deleteSemeadora(2);
+            
+            /*try {
+                new Semeadora("Case 100", "Case", 2005).saveSemeadora();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }*/
+            
+            /*try {
+                new Semeadora().removeSemeadora(9);
+            }catch(SQLException ex){
+                ex.printStackTrace();
+            }*/
+        } catch (DeleçãoException ex) {
+            
+            System.err.println(ex.getMessage());
+        }
         
     }
 }

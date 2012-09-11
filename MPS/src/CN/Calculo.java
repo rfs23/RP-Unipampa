@@ -16,7 +16,7 @@ public abstract class Calculo {
      */
     public static int porcVidaUtilParaVidaUtil(Peca peca, int porcVidaUtilRestante) throws ValorInvalidoException {
 
-        if (porcVidaUtilRestante > peca.getTipoPeca().estVidaUtil()) {
+        if (porcVidaUtilRestante > peca.getTipoPeca().getEstVidaUtil()) {
 
             throw new ValorInvalidoException("A porcentagem de vida útil restante da peça não pode ser maior do que 100.", porcVidaUtilRestante);
         } else if (porcVidaUtilRestante < 0) {
@@ -24,7 +24,7 @@ public abstract class Calculo {
             throw new ValorInvalidoException("A porcentagem de vida útil restante da peça não pode ser menor do que 0.", porcVidaUtilRestante);
         } else {
 
-            return (peca.getTipoPeca().estVidaUtil() * porcVidaUtilRestante) / 100;
+            return (peca.getTipoPeca().getEstVidaUtil() * porcVidaUtilRestante) / 100;
         }
 
     }
@@ -40,7 +40,7 @@ public abstract class Calculo {
 
         try {
 
-            return (peca.getTempoVidaUtil() * 100) / peca.getPeca().getTipoPeca().estVidaUtil();
+            return (peca.getTempoVidaUtil() * 100) / peca.getItemPeca().getPeca().getTipoPeca().getEstVidaUtil();
         } catch (ArithmeticException ex) {
 
             return 0;

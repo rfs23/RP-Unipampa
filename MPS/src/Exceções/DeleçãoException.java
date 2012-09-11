@@ -10,13 +10,13 @@ package Exceções;
  */
 public class DeleçãoException extends RuntimeException {
     
-     private String message;
-    private RuntimeException rtException;
+    private String message;
+    private Exception exception;
     
-    public DeleçãoException(String message, RuntimeException rtException){
+    public DeleçãoException(String message, Exception exception){
         
         this.message = message;
-        this.rtException = rtException;
+        this.exception = exception;
     }
     
     public DeleçãoException(String message){
@@ -30,8 +30,8 @@ public class DeleçãoException extends RuntimeException {
         return this.message;
     }
     
-    public RuntimeException getRTException(){
+    public Exception getRTException(){
         
-        return rtException;
+        return exception;
     }
 }

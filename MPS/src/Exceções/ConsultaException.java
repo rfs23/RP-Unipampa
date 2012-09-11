@@ -11,12 +11,12 @@ package Exceções;
 public class ConsultaException extends RuntimeException{
     
      private String message;
-    private RuntimeException rtException;
+    private Exception exception;
     
-    public ConsultaException(String message, RuntimeException rtException){
+    public ConsultaException(String message, Exception exception){
         
         this.message = message;
-        this.rtException = rtException;
+        this.exception = exception;
     }
     
     public ConsultaException(String message){
@@ -30,8 +30,8 @@ public class ConsultaException extends RuntimeException{
         return this.message;
     }
     
-    public RuntimeException getRTException(){
+    public Exception getRTException(){
         
-        return rtException;
+        return exception;
     }
 }
