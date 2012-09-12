@@ -19,8 +19,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -128,26 +126,13 @@ public class DBSemeadora implements RepositórioSemeadoras {
 
             semeadora = new Semeadora(result.getString("nome"), result.getString("marca"),
                     (Integer) result.getObject("ano"));
+            semeadora.setIdentificacao(result.getInt("codsem"));
+            semeadora.setDataRegistro(result.getDate("dataRegistro"));
         } catch (SQLException ex) {
 
             throw new ConsultaException("Coluna nome, marca ou ano não existe", ex);
         }
-        try {
-
-            semeadora.setDataRegistro(result.getDate("dataRegistro"));
-        } catch (SQLException ex) {
-
-            throw new ConsultaException("Coluna dataRegistro não existe", ex);
-        }
-
-        try {
-
-            semeadora.setIdentificacao(result.getInt("codsem"));
-        } catch (SQLException ex) {
-
-            throw new ConsultaException("Coluna codsem não existe", ex);
-        }
-
+        
         return semeadora;
 
     }
@@ -216,7 +201,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
             }
         } catch (SQLException sqle) {
             
-            throw new ConsultaException ("Não foi possível acessar o resultado da consulta para ");
+            throw new ConsultaException ("Não foi possível acessar o resultado da consulta para alocações de peça");
         }
 
         return alocacoes;

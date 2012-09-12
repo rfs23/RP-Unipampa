@@ -18,10 +18,9 @@ public class Semeadora extends Observable {
     private int ano;
     private Date dataRegistro;
     private Map<Integer, Divisao> divisoes;
-    private Collection<AlocacaoPeca> alocacaoPeca;
     private Collection<Atividade> atividade;
     private Collection<Manutencao> manutencao;
-    private AdministradorManutencoes administradorManutencoes;
+    //private AdministradorManutencoes administradorManutencoes;
     
     public Semeadora(String modelo, String marca, int ano) {
         
