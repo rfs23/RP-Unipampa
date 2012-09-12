@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -111,7 +112,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
     public Semeadora selectSemeadora(int codSem) throws ConsultaException {
 
         sql = "select * from semeadora where codsem=" + codSem;
-        ResultSet result = null;
+        result = null;
 
         try {
             result = sgbd.selectData(sql);
@@ -132,7 +133,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
 
             throw new ConsultaException("Coluna nome, marca ou ano não existe", ex);
         }
-        
+
         return semeadora;
 
     }
@@ -147,7 +148,6 @@ public class DBSemeadora implements RepositórioSemeadoras {
 
         sql = "select * from divisao where codSem=" + codSem;
 
-        ResultSet result;
         try {
 
             result = sgbd.selectData(sql);
@@ -162,8 +162,8 @@ public class DBSemeadora implements RepositórioSemeadoras {
 
                 int codDivisao = result.getInt("codDivisao");
                 Map<Integer, AlocacaoPeca> alocacoes = selectAlocacoesPecaSemeadora(codSem, codDivisao);
-                Divisao div = new Divisao(selectSemeadora(codSem), codDivisao, result.getString("nome"), alocacoes);
-                divisoes.put(div.getIdentificao(), div);
+                //Divisao div = new Divisao(selectSemeadora(codSem), codDivisao, result.getString("nome"), alocacoes);
+                //divisoes.put(div.getIdentificao(), div);
             }
         } catch (SQLException ex) {
 
@@ -182,9 +182,8 @@ public class DBSemeadora implements RepositórioSemeadoras {
      */
     private Map<Integer, AlocacaoPeca> selectAlocacoesPecaSemeadora(int codSem, int codDivisao) throws ConsultaException {
 
-        /*sql = "select * from alocacaopeca where codsem=" + codSem + " and coddivisao=" + codDivisao;
+        /*sql = "select * from itempeca where codsem=" + codSem + " and coddivisao=" + codDivisao;
 
-        ResultSet result;
         try {
 
             result = sgbd.selectData(sql);
@@ -194,14 +193,21 @@ public class DBSemeadora implements RepositórioSemeadoras {
         }*/
 
         HashMap<Integer, AlocacaoPeca> alocacoes = new HashMap<Integer, AlocacaoPeca>();
-        try {
-            while (result.next()) {
+        Map<Integer, ItemPeca> itensDivisao = new HashMap<Integer, ItemPeca>();
 
-                Map<Integer, ItemPeca> pca = selectItensPecas(result.getInt("codSem"), result.getInt("codDivisao"));
+        try {
+
+            while(result.next()){
+                
+                Peca peca = selectPeca(result.getInt("codtipopeca"), result.getInt("codpeca"));
+                ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
+                //itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
+                AlocacaoPeca alocPeca = new AlocacaoPeca();
+                
             }
         } catch (SQLException sqle) {
-            
-            throw new ConsultaException ("Não foi possível acessar o resultado da consulta para alocações de peça");
+
+            throw new ConsultaException("Não foi possível acessar o resultado da consulta para alocações de peça", sqle);
         }
 
         return alocacoes;

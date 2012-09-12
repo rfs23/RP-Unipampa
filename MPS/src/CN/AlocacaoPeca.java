@@ -83,6 +83,12 @@ public class AlocacaoPeca extends Observable {
      * @param divisao the divisao to set
      */
     public void setDivisao(Divisao divisao) {
-        this.divisao = divisao;
+        
+        if(divisao != null){
+            
+            divisao.addPeca(this, dataInclusaoItemPeca);
+            this.divisao = divisao;
+        }
+        
     }
 }

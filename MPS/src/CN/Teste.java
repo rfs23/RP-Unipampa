@@ -27,7 +27,24 @@ public class Teste {
      */
     public static void main(String[] args) {
         
-        DBSemeadora dbSem = new DBSemeadora(AcessoPostgres.getInstance());
+        Semeadora sem1 = new Semeadora("sem1", "teste1", 1990);
+        Semeadora sem2 = new Semeadora("sem2", "teste2", 1992);
+        
+        Divisao div = new Divisao("Div1", sem1);
+        
+        div.setIdentificao(1);
+        
+        System.out.println(div.getSemeadora().getAno());
+        
+        div.setSemeadora(sem1);
+        div.setSemeadora(sem1);
+        div.setSemeadora(sem2);
+        
+        System.out.println(div.getSemeadora().getAno());
+        
+        System.out.println(sem1.listarDivisoes());
+        System.out.println(sem2.listarDivisoes());
+        /*DBSemeadora dbSem = new DBSemeadora(AcessoPostgres.getInstance());
         Semeadora sem =  new Semeadora("Case 100", "Case", 2005);
         
         try{
@@ -51,10 +68,10 @@ public class Teste {
             }catch(SQLException ex){
                 ex.printStackTrace();
             }*/
-        } catch (DeleçãoException ex) {
+        /*} catch (DeleçãoException ex) {
             
             System.err.println(ex.getMessage());
-        }
+        }*/
         
     }
 }

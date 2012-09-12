@@ -3,9 +3,11 @@ package CN;
 import Repositório.AcessoPostgres;
 import Repositório.DBSemeadora;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -28,6 +30,7 @@ public class Semeadora extends Observable {
         this.marca = marca;
         this.ano = ano;
         this.dataRegistro = Calendar.getInstance().getTime();
+        this.divisoes = new HashMap<Integer, Divisao>();
     }
     
     public Semeadora(){
@@ -36,10 +39,32 @@ public class Semeadora extends Observable {
     
     public void addDivisao(Divisao divisao) {
         
+        try{
+            
+            divisao.getSemeadora().divisoes.remove(divisao.getIdentificao());
+            divisoes.put(divisao.getIdentificao(), divisao);
+        }catch(NullPointerException npe){
+            
+        }
+        
     }
     
     public Divisao selecionarDivisao(String nome) {
         return null;
+    }
+    
+    public Divisao excluirDivisao(int codDivisao){
+        
+        try{
+            
+            System.out.println(divisoes.get(codDivisao));
+            divisoes.get(codDivisao).setSemeadora(null);
+        }catch (NullPointerException npe){
+            
+            return null;
+        }
+        
+        return divisoes.remove(codDivisao);
     }
     
     public void realizarAtividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
@@ -59,7 +84,8 @@ public class Semeadora extends Observable {
     }
     
     public List listarDivisoes() {
-        return null;
+        
+        return new ArrayList<Divisao>(this.divisoes.values());
     }
     
     public void addManutencao(Manutencao manutencao) {
