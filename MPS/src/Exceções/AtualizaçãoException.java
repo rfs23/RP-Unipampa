@@ -15,6 +15,7 @@ public class AtualizaçãoException extends RuntimeException {
 
     public AtualizaçãoException(String message, Exception exception) {
 
+        super(message);
         this.message = message;
         this.exception = exception;
     }

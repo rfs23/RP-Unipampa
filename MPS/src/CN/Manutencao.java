@@ -19,4 +19,25 @@ public class Manutencao {
 
 	}
 
+    /**
+     * @return the dataRealizacao
+     */
+    public Date getDataRealizacao() {
+        return dataRealizacao;
+    }
+
+    /**
+     * @param dataRealizacao the dataRealizacao to set
+     */
+    public void setDataRealizacao(Date dataRealizacao) {
+        this.dataRealizacao = dataRealizacao;
+    }
+
+    /**
+     * @return the codigo
+     */
+    public int getCodigo() {
+        return codigo;
+    }
+
 }

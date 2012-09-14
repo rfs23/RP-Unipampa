@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -45,8 +47,8 @@ public class DBSemeadora implements RepositórioSemeadoras {
     @Override
     public void insertSemeadora(Semeadora semeadora) throws InserçãoException {
 
-        sql = "insert into semeadora(nome, marca, ano, datainclusao) values ( '"
-                + semeadora.getModelo() + "', '" + semeadora.getMarca() + "', " + semeadora.getAno()
+        sql = "insert into semeadora values ( "
+                + semeadora.getIdentificacao() + ", '"+ semeadora.getModelo() + "', '" + semeadora.getMarca() + "', " + semeadora.getAno()
                 + ", '" + semeadora.getDataRegistro().getDate() + "/" + (semeadora.getDataRegistro().getMonth() + 1)
                 + "/" + (semeadora.getDataRegistro().getYear() + 1900) + "')";
 
@@ -184,26 +186,26 @@ public class DBSemeadora implements RepositórioSemeadoras {
 
         /*sql = "select * from itempeca where codsem=" + codSem + " and coddivisao=" + codDivisao;
 
-        try {
+         try {
 
-            result = sgbd.selectData(sql);
-        } catch (SQLException ex) {
+         result = sgbd.selectData(sql);
+         } catch (SQLException ex) {
 
-            throw new ConsultaException("Não foi possível consultar as alocações da divisão " + codDivisao + " da semeadora " + codSem, ex);
-        }*/
+         throw new ConsultaException("Não foi possível consultar as alocações da divisão " + codDivisao + " da semeadora " + codSem, ex);
+         }*/
 
         HashMap<Integer, AlocacaoPeca> alocacoes = new HashMap<Integer, AlocacaoPeca>();
         Map<Integer, ItemPeca> itensDivisao = new HashMap<Integer, ItemPeca>();
 
         try {
 
-            while(result.next()){
-                
+            while (result.next()) {
+
                 Peca peca = selectPeca(result.getInt("codtipopeca"), result.getInt("codpeca"));
                 ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
                 //itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
-                AlocacaoPeca alocPeca = new AlocacaoPeca();
-                
+ //correto               AlocacaoPeca alocPeca = new AlocacaoPeca();
+
             }
         } catch (SQLException sqle) {
 
@@ -388,5 +390,57 @@ public class DBSemeadora implements RepositórioSemeadoras {
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByDataFab(Date dataFab) throws ConsultaException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getMaxCodSemeadora() throws ConsultaException {
+
+        sql = "select max(codsem) as codmax from semeadora";
+
+        try {
+            result = sgbd.selectData(sql);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível obter o maior código da tabela semeadora", sqle);
+        }
+
+        int maxCodSem = 0;
+
+        try {
+
+            result.next();
+            maxCodSem = result.getInt("codmax");
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível acessar o resultado de maior código para semadoras", sqle);
+        }
+
+        return maxCodSem;
+    }
+
+    @Override
+    public int getMaxCodDivisao(int codSem) throws ConsultaException {
+
+        sql = "select max(coddivisao) as codmax from divisao where codsem=" + codSem;
+
+        try {
+            result = sgbd.selectData(sql);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível obter o maior código da tabela divisão para o código de semeadora informado", sqle);
+        }
+
+        int maxCodDivisao = 0;
+
+        try {
+
+            result.next();
+            maxCodDivisao = result.getInt("codmax");
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível acessar o resultado de maior código para divisões", sqle);
+        }
+
+        return maxCodDivisao;
     }
 }

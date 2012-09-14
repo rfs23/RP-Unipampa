@@ -1,5 +1,7 @@
 package CN;
 
+import Cadastro.CadastroSemeadoras;
+import Exceções.ConsultaException;
 import Repositório.AcessoPostgres;
 import Repositório.DBSemeadora;
 import java.sql.SQLException;
@@ -10,7 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
+import java.util.TreeMap;
 
 public class Semeadora extends Observable {
     
@@ -20,12 +24,18 @@ public class Semeadora extends Observable {
     private int ano;
     private Date dataRegistro;
     private Map<Integer, Divisao> divisoes;
-    private Collection<Atividade> atividade;
-    private Collection<Manutencao> manutencao;
+    private Map<Integer, Atividade> atividades;
+    private Map<Integer, Manutencao> manutencoes;
     //private AdministradorManutencoes administradorManutencoes;
     
-    public Semeadora(String modelo, String marca, int ano) {
+    public Semeadora(String modelo, String marca, int ano) throws ConsultaException {
+
+        this(new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoSemeadora(), modelo, marca, ano);
+    }
+    
+    public Semeadora(int identificacao, String modelo, String marca, int ano) {
         
+        this.identificacao = identificacao;
         this.modelo = modelo;
         this.marca = marca;
         this.ano = ano;
@@ -33,53 +43,50 @@ public class Semeadora extends Observable {
         this.divisoes = new HashMap<Integer, Divisao>();
     }
     
-    public Semeadora(){
-        
-    }
     
-    public void addDivisao(Divisao divisao) {
+    public Divisao addDivisao(Divisao divisao) {
         
-        try{
+        if(divisao.getSemeadora() != null){
             
             divisao.getSemeadora().divisoes.remove(divisao.getIdentificao());
-            divisoes.put(divisao.getIdentificao(), divisao);
-        }catch(NullPointerException npe){
-            
+            return divisoes.put(divisao.getIdentificao(), divisao);
         }
+        
+        return null;
         
     }
     
     public Divisao selecionarDivisao(String nome) {
+        
+        for(Entry<Integer, Divisao> sem: divisoes.entrySet()){
+            
+            if(sem.getValue().getNome().equals(nome)){
+                
+                return sem.getValue();
+            }
+        }
+        
         return null;
+    }
+    
+    public Divisao selecionarDivisao(int codDivisao){
+        
+        return divisoes.get(codDivisao);
     }
     
     public Divisao excluirDivisao(int codDivisao){
         
         try{
             
-            System.out.println(divisoes.get(codDivisao));
-            divisoes.get(codDivisao).setSemeadora(null);
-        }catch (NullPointerException npe){
+            Divisao div =  divisoes.get(codDivisao);
+            div.setSemeadora(null, this);
+            divisoes.remove(codDivisao);
+            
+            return div;
+        }catch (Exception ex){
             
             return null;
         }
-        
-        return divisoes.remove(codDivisao);
-    }
-    
-    public void realizarAtividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
-        
-    }
-    
-    public void addAtividade(Atividade ativ) {
-        
-    }
-    
-    public List listarAtividades() {
-        return null;
-    }
-    
-    public void excluirAtividade(int cod) {
         
     }
     
@@ -88,8 +95,36 @@ public class Semeadora extends Observable {
         return new ArrayList<Divisao>(this.divisoes.values());
     }
     
-    public void addManutencao(Manutencao manutencao) {
+    public void realizarAtividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
         
+    }
+    
+    public Atividade addAtividade(Atividade ativ) {
+        
+        return atividades.put(ativ.getCodigo(), ativ);
+    }
+    
+    public List<Atividade> listarAtividades() {
+        
+        return new ArrayList<Atividade>(atividades.values());
+    }
+    
+    public Atividade excluirAtividade(int codAtiv) {
+        
+        try{
+            
+            return atividades.remove(codAtiv);
+        }catch(Exception ex){
+            
+            return null;
+        }
+        
+    }
+    
+    
+    public Manutencao addManutencao(Manutencao manutencao) {
+        
+        return manutencoes.put(manutencao.getCodigo(), manutencao);
     }
     
     public void sofrerReparo(Date data, AlocacaoPeca peca, int porcVidaUtil) {
@@ -104,12 +139,14 @@ public class Semeadora extends Observable {
         
     }
     
-    public List listarManutencoes() {
-        return null;
+    public List<Manutencao> listarManutencoes() {
+        
+        return new ArrayList<Manutencao>(manutencoes.values()) ;
     }
     
-    public void excluirManutencao(int cod) {
+    public Manutencao excluirManutencao(int codManut) {
         
+        return manutencoes.remove(codManut);
     }
     
     public void editarReparo(int cod, Date data, int porcVidaUtil) {
@@ -131,6 +168,7 @@ public class Semeadora extends Observable {
      * @return the identificacao
      */
     public int getIdentificacao() {
+        
         return identificacao;
     }
 
@@ -138,6 +176,7 @@ public class Semeadora extends Observable {
      * @return the modelo
      */
     public String getModelo() {
+        
         return modelo;
     }
 
@@ -145,6 +184,7 @@ public class Semeadora extends Observable {
      * @return the marca
      */
     public String getMarca() {
+        
         return marca;
     }
 
@@ -152,6 +192,7 @@ public class Semeadora extends Observable {
      * @return the ano
      */
     public int getAno() {
+        
         return ano;
     }
 
@@ -159,7 +200,42 @@ public class Semeadora extends Observable {
      * @return the dataRegistro
      */
     public Date getDataRegistro() {
+        
         return dataRegistro;
+    }
+
+    /**
+     * @param identificacao the identificacao to set
+     */
+    public void setIdentificacao(int identificacao) {
+        
+        this.identificacao = identificacao;
+    }
+
+    /**
+     * @param dataRegistro the dataRegistro to set
+     */
+    public void setDataRegistro(Date dataRegistro) {
+        
+        this.dataRegistro = dataRegistro;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        
+        return ((obj instanceof Semeadora) && ((Semeadora)obj).getIdentificacao() == this.identificacao) ? true : false;
+    }
+    
+    @Override
+    public int hashCode(){
+        
+        return this.identificacao;
+    }
+    
+    @Override
+    public String toString(){
+        
+        return "Semeadora: " + this.identificacao + ", " + this.marca + ", " + this.modelo + ", " + this.ano + ", " + this.dataRegistro;
     }
     
     /*public void saveSemeadora() throws SQLException {
@@ -176,18 +252,4 @@ public class Semeadora extends Observable {
         
         new DBSemeadora(AcessoPostgres.getInstance()).deleteSemeadora(codSem);
     }*/
-
-    /**
-     * @param identificacao the identificacao to set
-     */
-    public void setIdentificacao(int identificacao) {
-        this.identificacao = identificacao;
-    }
-
-    /**
-     * @param dataRegistro the dataRegistro to set
-     */
-    public void setDataRegistro(Date dataRegistro) {
-        this.dataRegistro = dataRegistro;
-    }
 }

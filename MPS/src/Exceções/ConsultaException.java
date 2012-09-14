@@ -8,30 +8,31 @@ package Exceções;
  *
  * @author rafael
  */
-public class ConsultaException extends RuntimeException{
-    
-     private String message;
+public class ConsultaException extends RuntimeException {
+
+    private String message;
     private Exception exception;
-    
-    public ConsultaException(String message, Exception exception){
-        
+
+    public ConsultaException(String message, Exception exception) {
+
+        super(message);
         this.message = message;
         this.exception = exception;
     }
-    
-    public ConsultaException(String message){
-        
+
+    public ConsultaException(String message) {
+
         this(message, null);
     }
-    
+
     @Override
-    public String getMessage(){
-        
+    public String getMessage() {
+
         return this.message;
     }
-    
-    public Exception getRTException(){
-        
+
+    public Exception getRTException() {
+
         return exception;
     }
 }

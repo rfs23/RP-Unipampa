@@ -40,7 +40,7 @@ public abstract class Calculo {
 
         try {
 
-            return (peca.getTempoVidaUtil() * 100) / peca.getItemPeca().getPeca().getTipoPeca().getEstVidaUtil();
+            return (peca.getItemPeca().getTempoVidaUtilRestante() * 100) / peca.getItemPeca().getPeca().getTipoPeca().getEstVidaUtil();
         } catch (ArithmeticException ex) {
 
             return 0;

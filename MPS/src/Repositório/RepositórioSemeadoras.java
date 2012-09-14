@@ -38,4 +38,8 @@ public interface RepositórioSemeadoras {
     Map<Integer, Semeadora> selectSemeadorasByAno (int ano) throws ConsultaException;
     
     Map<Integer, Semeadora> selectSemeadorasByDataFab (Date dataFab) throws ConsultaException;
+    
+    int getMaxCodSemeadora() throws ConsultaException;
+    
+    int getMaxCodDivisao(int codSem) throws ConsultaException;
 }

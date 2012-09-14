@@ -6,26 +6,80 @@ import java.util.Collection;
 
 public class Atividade {
 
-	private TipoAtividade nome;
+    private TipoAtividade nome;
+    private Date dataRealizacao;
+    private Date duracao;
+    private Map fatores;
+    private int codigo;
+    private Semeadora semeadora;
+    private Collection<DesgastePeca> desgastePeca;
 
-	private Date dataRealizacao;
+    public Atividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
+    }
 
-	private Date duracao;
+    public void addDesgastePeca(DesgastePeca desgastePeca) {
+    }
 
-	private Map fatores;
+    /**
+     * @return the nome
+     */
+    public TipoAtividade getNome() {
+        return nome;
+    }
 
-	private int codigo;
+    /**
+     * @param nome the nome to set
+     */
+    public void setNome(TipoAtividade nome) {
+        this.nome = nome;
+    }
 
-	private Semeadora semeadora;
+    /**
+     * @return the dataRealizacao
+     */
+    public Date getDataRealizacao() {
+        return dataRealizacao;
+    }
 
-	private Collection<DesgastePeca> desgastePeca;
+    /**
+     * @param dataRealizacao the dataRealizacao to set
+     */
+    public void setDataRealizacao(Date dataRealizacao) {
+        this.dataRealizacao = dataRealizacao;
+    }
 
-	public Atividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
+    /**
+     * @return the duracao
+     */
+    public Date getDuracao() {
+        return duracao;
+    }
 
-	}
+    /**
+     * @param duracao the duracao to set
+     */
+    public void setDuracao(Date duracao) {
+        this.duracao = duracao;
+    }
 
-	public void addDesgastePeca(DesgastePeca desgastePeca) {
+    /**
+     * @return the fatores
+     */
+    public Map getFatores() {
+        return fatores;
+    }
 
-	}
+    /**
+     * @param fatores the fatores to set
+     */
+    public void setFatores(Map fatores) {
+        this.fatores = fatores;
+    }
 
+    /**
+     * @return the codigo
+     */
+    public int getCodigo() {
+        return codigo;
+    }
 }

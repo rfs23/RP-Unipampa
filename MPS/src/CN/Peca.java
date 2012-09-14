@@ -1,7 +1,9 @@
 package CN;
 
+import Cadastro.CadastroPecas;
+import Repositório.AcessoPostgres;
+import Repositório.DBPeca;
 import java.util.Date;
-import java.util.Collection;
 import java.util.Map;
 
 public class Peca {
@@ -9,7 +11,7 @@ public class Peca {
     private int identificacao;    
     private String fabricante;
     private TipoPeca tipo;
-    private AdministradorManutencoes administradorManutencoes;
+    private CalculaDesgasteAtividade calcDesgaste;
 
     public Peca(int identificacao, String fabricante, TipoPeca tipo) {
         
@@ -18,26 +20,28 @@ public class Peca {
         this.tipo = tipo;
     }
 
-    Peca() {
+    public Peca(String fabricante, TipoPeca tipo){
         
-        this(0,"",null);
+        this(new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).geraCodigoPeca(), fabricante, tipo);
     }
 
     public void setTipo(TipoPeca tipo) {
+        
+        this.tipo = tipo;
     }
 
     public void setCalculaDesgaste(CalculaDesgasteAtividade calcDesgaste) {
+        
+        this.calcDesgaste = calcDesgaste;
     }
 
     public int calculaDesgaste(Map fatores, Date duracao, TipoAtividade atividade) {
+        
         return 0;
     }
 
-    public TipoPeca getTipoPeca() {
-        return null;
-    }
-
     public boolean matches(int Map) {
+        
         return false;
     }
 
@@ -45,6 +49,7 @@ public class Peca {
      * @return the identificacao
      */
     public int getIdentificacao() {
+        
         return identificacao;
     }
 
@@ -52,6 +57,7 @@ public class Peca {
      * @param identificacao the identificacao to set
      */
     public void setIdentificacao(int identificacao) {
+        
         this.identificacao = identificacao;
     }
 
@@ -59,6 +65,7 @@ public class Peca {
      * @return the fabricante
      */
     public String getFabricante() {
+        
         return fabricante;
     }
 
@@ -66,6 +73,7 @@ public class Peca {
      * @param fabricante the fabricante to set
      */
     public void setFabricante(String fabricante) {
+        
         this.fabricante = fabricante;
     }
 
@@ -74,6 +82,25 @@ public class Peca {
      * @return the tipo
      */
     public TipoPeca getTipo() {
+        
         return tipo;
+    }
+    
+    @Override
+    public int hashCode(){
+        
+        return this.identificacao;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        
+        return ((obj instanceof Peca) && ((Peca)obj).getIdentificacao() == this.identificacao );
+    }
+    
+    @Override
+    public String toString(){
+        
+        return "Peca: " + this.identificacao + ", " + this.fabricante + ", " + this.tipo;
     }
 }
