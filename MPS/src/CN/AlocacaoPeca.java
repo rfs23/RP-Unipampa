@@ -11,13 +11,30 @@ public class AlocacaoPeca extends Observable {
     private ItemPeca peca;
     private Observable observable;
 
-    public AlocacaoPeca(ItemPeca peca, Divisao divisao) throws RelaçãoPeçaDivisãoException{
+    public AlocacaoPeca(Date dataInclusaoPeca) {
 
-        setItemPeca(peca);
-        setDivisao(divisao, null);
+        this.dataInclusaoItemPeca = dataInclusaoPeca;
     }
 
-    public void alterarItemPeca(ItemPeca peca) {
+    public AlocacaoPeca() {
+
+        this(new Date());
+    }
+
+    public void alterarItemPeca(Divisao div, ItemPeca peca, Date dataInclusaoPeca) throws RelaçãoPeçaDivisãoException {
+
+        verificaTipoAlocacao(div, peca);
+
+        try {
+            if (div.selecionarPeca(peca.getIdentificacao()).equals(this)) {
+
+                this.dataInclusaoItemPeca = dataInclusaoPeca;
+                this.divisao = div;
+                this.peca = peca;
+                peca.setAlocPeca(this);
+            }
+        } catch (NullPointerException npe) {
+        }
     }
 
     public ItemPeca getItemPeca() {
@@ -48,29 +65,32 @@ public class AlocacaoPeca extends Observable {
     public void verificaVidaUtil(int vidaUtil) {
     }
 
-    public void setItemPeca(ItemPeca peca) {
+    /*public final void setItemPeca(ItemPeca peca) {
 
-        if (peca != null) {
+     if (peca != null) {
 
-            if (peca.getAlocPeca() == null) {
+     if (peca.getAlocPeca() == null) {
 
-                if (this.peca != null) {
+     if (this.peca != null) {
 
-                    this.peca.setAlocPeca(null);
-                }
+     this.peca.setAlocPeca(null);
+     }
 
-                this.peca = peca;
-                peca.setAlocPeca(this);
+     this.peca = peca;
+     peca.setAlocPeca(this);
+     }
+
+     }
+     }*/
+    public static void verificaTipoAlocacao(Divisao div, ItemPeca peca) throws RelaçãoPeçaDivisãoException {
+
+        try {
+
+            if (!div.getTipoAloc().equals(peca.getPeca().getTipo().getTipoAlocacao())) {
+
+                throw new RelaçãoPeçaDivisãoException(div.getTipoAloc(), peca.getPeca().getTipo().getTipoAlocacao(), "O item de peça está sendo alocado em uma divisão a qual não é compatível com!");
             }
-
-        }
-    }
-
-    public void verificaTipoAlocacao(Divisao div, ItemPeca peca) throws RelaçãoPeçaDivisãoException{
-        
-        if(!div.getTipoAloc().equals(peca.getPeca().getTipo().getTipoAlocacao())){
-            
-            throw new RelaçãoPeçaDivisãoException(div.getTipoAloc(), peca.getPeca().getTipo().getTipoAlocacao(), "O item de peça está sendo alocado em uma divisão a qual não é compatível com!");
+        } catch (NullPointerException npe) {
         }
     }
 
@@ -91,31 +111,30 @@ public class AlocacaoPeca extends Observable {
     /**
      * @param divisao the divisao to set
      */
-    public void setDivisao(Divisao divisao, Object obj) {
+    /*public final void setDivisao(Divisao divisao, Object obj) {
 
-        if (divisao != null) {
+     if (divisao != null) {
 
-            divisao.addPeca(this, new Date());
-            this.divisao = divisao;
-        } else {
+     divisao.addPeca(this, new Date());
+     this.divisao = divisao;
+     } else {
 
-            if (this.divisao != null) {
+     if (this.divisao != null) {
 
-                if (this.divisao.equals(obj)) {
+     if (this.divisao.equals(obj)) {
 
-                    this.divisao.selecionarPeca(this.getItemPeca().getIdentificacao()).divisao = null;
-                } else {
+     this.divisao.selecionarPeca(this.getItemPeca().getIdentificacao()).divisao = null;
+     } else {
 
-                    this.divisao.excluirPeca(divisao.selecionarPeca(this.getItemPeca().getIdentificacao()));
-                }
+     this.divisao.excluirPeca(divisao.selecionarPeca(this.getItemPeca().getIdentificacao()));
+     }
 
-            }
+     }
 
-            this.divisao = null;
-        }
+     this.divisao = null;
+     }
 
-    }
-
+     }*/
     @Override
     public int hashCode() {
 
@@ -139,4 +158,12 @@ public class AlocacaoPeca extends Observable {
 
         return "AlocacaoPeca: " + this.divisao + ", " + this.peca + ", " + this.dataInclusaoItemPeca;
     }
+
+    /*void setDivisao(Divisao div) {
+        
+     if(div.selecionarPeca(this.peca.getIdentificacao()).equals(this)){
+            
+     this.divisao = div;
+     }
+     }*/
 }

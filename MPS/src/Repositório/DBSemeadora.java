@@ -9,6 +9,7 @@ import CN.Divisao;
 import CN.ItemPeca;
 import CN.Peca;
 import CN.Semeadora;
+import CN.TipoAlocacao;
 import CN.TipoPeca;
 import Exceções.AtualizaçãoException;
 import Exceções.ConsultaException;
@@ -18,10 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -55,13 +54,48 @@ public class DBSemeadora implements RepositórioSemeadoras {
         try {
 
             this.sgbd.executeSQL(sql);
+            insertDivisao(semeadora.listarDivisoes());
         } catch (SQLException sqle) {
 
             throw new InserçãoException("Não foi possível incluir a semeadora no banco de dados", sqle);
         }
 
     }
-
+    
+    private void insertDivisao(List<Divisao> divisoes) throws InserçãoException{
+        
+        try{
+            
+            for(Divisao div: divisoes){
+                
+                sql = "insert into divisao values (" + div.getSemeadora().getIdentificacao() + ", " + div.getIdentificao() + ", '" + div.getNome() + "', " + div.getTipoAloc().getCodTipoAlocacao() + ")";
+                sgbd.executeSQL(sql);
+                insertAlocacoesPeca(div.listarPecas());
+            }
+        }catch(SQLException sqle){
+            
+            throw new InserçãoException ("Não foi possível adicionar a divisão no banco de dados", sqle);
+        }
+    }
+    
+    private void insertAlocacoesPeca(List<AlocacaoPeca> alocacoes) throws InserçãoException{
+        
+        try{
+            
+            for(AlocacaoPeca alocPeca: alocacoes){
+                
+                sql = "update itempeca set datainclusao='" + alocPeca.getDataInclusaoItemPeca().getDate() + "/" + (alocPeca.getDataInclusaoItemPeca().getMonth()+1) + "/" 
+                        + (alocPeca.getDataInclusaoItemPeca().getYear() + 1900) + "'"
+                        + ", coddivisao=" + alocPeca.getDivisao().getIdentificao() + ", "
+                        + "codsem=" + alocPeca.getDivisao().getSemeadora().getIdentificacao() + " where coditempeca=" + alocPeca.getItemPeca().getIdentificacao();
+                System.out.println(sql);
+                sgbd.executeSQL(sql);
+            }
+        }catch(SQLException sqle){
+            
+            throw new InserçãoException("Não foi possível inserir a alocação de peça no banco de dados",sqle);
+        }
+    }
     /**
      * Remove do banco de dados um registro de semeadora que tenha o código
      * passado como parâmetro.
@@ -73,6 +107,17 @@ public class DBSemeadora implements RepositórioSemeadoras {
     @Override
     public void deleteSemeadora(int codSem) throws DeleçãoException {
 
+        sql = "update itempeca set datainclusao=null where codsem="+ codSem;
+        
+        try{
+            
+            sgbd.executeSQL(sql);
+        }catch (SQLException sqle){
+            
+            throw new AtualizaçãoException("Não foi possível alterar o valor "
+                    + "da data da inclusão da peça para itens de peça no banco de dados",sqle);
+        }
+        
         sql = "delete from semeadora where codsem=" + codSem;
         try {
 
@@ -131,11 +176,23 @@ public class DBSemeadora implements RepositórioSemeadoras {
                     (Integer) result.getObject("ano"));
             semeadora.setIdentificacao(result.getInt("codsem"));
             semeadora.setDataRegistro(result.getDate("dataRegistro"));
+            
         } catch (SQLException ex) {
 
             throw new ConsultaException("Coluna nome, marca ou ano não existe", ex);
         }
-
+        
+        for(Divisao divisao: selectDivisoesSemeadora(codSem).values()){
+            
+            semeadora.addDivisao(divisao.getIdentificao(), divisao.getNome(), divisao.getTipoAloc());
+            for(AlocacaoPeca alocPeca: selectAlocacoesPecaSemeadora(codSem, divisao.getIdentificao()).values()){
+                
+                semeadora.addPeca(divisao.getIdentificao(), alocPeca.getItemPeca().getIdentificacao(), 
+                        alocPeca.getItemPeca().getAnoFab(), alocPeca.getItemPeca().getDataAquis(), alocPeca.getItemPeca().getPeca(),
+                        alocPeca.getItemPeca().getTempoVidaUtilRestante(), alocPeca.getDataInclusaoItemPeca());
+            }
+        }
+        
         return semeadora;
 
     }
@@ -162,10 +219,8 @@ public class DBSemeadora implements RepositórioSemeadoras {
         try {
             while (result.next()) {
 
-                int codDivisao = result.getInt("codDivisao");
-                Map<Integer, AlocacaoPeca> alocacoes = selectAlocacoesPecaSemeadora(codSem, codDivisao);
-                //Divisao div = new Divisao(selectSemeadora(codSem), codDivisao, result.getString("nome"), alocacoes);
-                //divisoes.put(div.getIdentificao(), div);
+                Divisao div = new Divisao(result.getInt("coddivisao"), result.getString("nome"), selectTipoAlocacao(result.getInt("codtipoalocacao")));
+                divisoes.put(div.getIdentificao(), div);
             }
         } catch (SQLException ex) {
 
@@ -184,7 +239,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
      */
     private Map<Integer, AlocacaoPeca> selectAlocacoesPecaSemeadora(int codSem, int codDivisao) throws ConsultaException {
 
-        /*sql = "select * from itempeca where codsem=" + codSem + " and coddivisao=" + codDivisao;
+        sql = "select * from itempeca where codsem=" + codSem + " and coddivisao=" + codDivisao;
 
          try {
 
@@ -192,7 +247,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
          } catch (SQLException ex) {
 
          throw new ConsultaException("Não foi possível consultar as alocações da divisão " + codDivisao + " da semeadora " + codSem, ex);
-         }*/
+         }
 
         HashMap<Integer, AlocacaoPeca> alocacoes = new HashMap<Integer, AlocacaoPeca>();
         Map<Integer, ItemPeca> itensDivisao = new HashMap<Integer, ItemPeca>();
@@ -202,7 +257,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
             while (result.next()) {
 
                 Peca peca = selectPeca(result.getInt("codtipopeca"), result.getInt("codpeca"));
-                ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
+                //ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
                 //itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
  //correto               AlocacaoPeca alocPeca = new AlocacaoPeca();
 
@@ -240,8 +295,8 @@ public class DBSemeadora implements RepositórioSemeadoras {
             while (result.next()) {
 
                 Peca peca = selectPeca(result.getInt("codtipopeca"), result.getInt("codpeca"));
-                ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
-                itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
+              //  ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
+              //  itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
             }
         } catch (SQLException sqle) {
 
@@ -326,6 +381,17 @@ public class DBSemeadora implements RepositórioSemeadoras {
         }
 
         return tipoPeca;
+    }
+    
+    private TipoAlocacao selectTipoAlocacao(int codTipoAlocacao){
+        
+        for(TipoAlocacao ta: TipoAlocacao.values()){
+            
+            if(codTipoAlocacao == ta.getCodTipoAlocacao())
+                return ta;
+        }
+        
+        return null;
     }
 
     /**

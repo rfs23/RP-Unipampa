@@ -23,17 +23,18 @@ public class ItemPeca {
     private AlocacaoPeca alocPeca;
 
 
-    public ItemPeca(int anoFab, Date dataAquis, Peca peca) {
+    public ItemPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
 
-        this(new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).geraCodigoItemPeca(), anoFab, dataAquis, peca);
+        this(new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).geraCodigoItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante);
     }
 
-    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca) {
+    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
 
         this.identificacao = identificacao;
         this.AnoFab = anoFab;
         this.dataAquis = dataAquis;
         this.peca = peca;
+        this.tempoVidaUtilRestante = tempoVidaUtilRestante;
     }
 
     /**
@@ -126,13 +127,18 @@ public class ItemPeca {
      */
     protected void setAlocPeca(AlocacaoPeca alocPeca) {
         
-        Exception e = new Exception();  
+       /* Exception e = new Exception();  
         StackTraceElement[] stack = e.getStackTrace();
         String nomeCompletoClasseChamadora = stack[1].getClassName().replace(".", "/");
         String[] nomeClasseChamadora = nomeCompletoClasseChamadora.split("/");
         
         if (nomeClasseChamadora[nomeClasseChamadora.length -1].equals("AlocacaoPeca")) {
 
+            this.alocPeca = alocPeca;
+        }*/
+        
+        if(alocPeca.getItemPeca().equals(this)){
+            
             this.alocPeca = alocPeca;
         }
 

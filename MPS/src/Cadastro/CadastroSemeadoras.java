@@ -37,6 +37,8 @@ public class CadastroSemeadoras {
     public void insertSemeadora(Semeadora semeadora) throws InserçãoException {
 
         this.repSemeadoras.insertSemeadora(semeadora);
+        
+        System.out.println("Semeadora adicionada com sucesso!");
     }
 
     public void deleteSemeadora(int codSemeadora) throws DeleçãoException {

@@ -18,21 +18,20 @@ public class Divisao {
     private TipoAlocacao tipoAloc;
     private Map<Integer, AlocacaoPeca> alocacoesPeca;
 
-    public Divisao(String nome, Semeadora semeadora, TipoAlocacao tipoAloc) throws ConsultaException{
+    public Divisao(String nome, TipoAlocacao tipoAloc, Semeadora semeadora) throws ConsultaException{
 
-        this(semeadora, new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoDivisão(semeadora.getIdentificacao()), nome, tipoAloc);
+        this(new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoDivisão(semeadora.getIdentificacao()), nome, tipoAloc);
     }
 
-    public Divisao(Semeadora semeadora, int codDivisao, String nome, TipoAlocacao tipoAloc) {
+    public Divisao(int codDivisao, String nome, TipoAlocacao tipoAloc) {
 
         this.nome = nome;
         this.identificao = codDivisao;
         this.alocacoesPeca = new HashMap<Integer, AlocacaoPeca>();
         this.tipoAloc = tipoAloc;
-        this.setSemeadora(semeadora, null);
     }
 
-    public AlocacaoPeca addPeca(AlocacaoPeca peca, Date data) {
+    /*public AlocacaoPeca addPeca(AlocacaoPeca peca, Date data) {
 
         try {
 
@@ -52,9 +51,50 @@ public class Divisao {
         }
 
 
+    }*/
+    
+    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao){
+        
+        ItemPeca iPeca= new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
+        AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusao);
+        AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+        alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+        
+        return alocPecaAnterior;
     }
+    
+    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante){
+        
+        ItemPeca iPeca= new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
+        AlocacaoPeca alocPeca = new AlocacaoPeca();
+        AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+        alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+        
+        return alocPecaAnterior;
+    }
+    
+    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca){
+        
+        ItemPeca iPeca= new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
+        AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusaoPeca);
+        AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+        alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+        
+        return alocPecaAnterior;
+    }
+    
+    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante){
+        
+        ItemPeca iPeca= new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
+        AlocacaoPeca alocPeca = new AlocacaoPeca();
+        AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+        alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+        
+        return alocPecaAnterior;
+    }
+    
 
-    public AlocacaoPeca addPeca(AlocacaoPeca peca) {
+    /*public AlocacaoPeca addPeca(AlocacaoPeca peca) {
 
         try {
 
@@ -69,7 +109,7 @@ public class Divisao {
 
             return null;
         }
-    }
+    }*/
 
     public List<AlocacaoPeca> listarPecas() {
 
@@ -81,7 +121,7 @@ public class Divisao {
         try {
 
             AlocacaoPeca peca = alocacoesPeca.get(alocPeca.getItemPeca().getIdentificacao());
-            peca.setDivisao(null, this);
+            peca.alterarItemPeca(null, peca.getItemPeca(), peca.getDataInclusaoItemPeca());
             alocacoesPeca.remove(alocPeca.getItemPeca().getIdentificacao());
 
             return peca;
@@ -127,9 +167,13 @@ public class Divisao {
     /**
      * @param semeadora the semeadora to set
      */
-    public final void setSemeadora(Semeadora semeadora, Object obj) {
+    public void setSemeadora(Semeadora semeadora) {
 
-        if (semeadora != null) {
+        if(semeadora.selecionarDivisao(identificao).equals(this)){
+            
+            this.semeadora = semeadora;
+        }
+        /*if (semeadora != null) {
 
             semeadora.addDivisao(this);
             this.semeadora = semeadora;
@@ -148,7 +192,7 @@ public class Divisao {
             }
 
             this.semeadora = null;
-        }
+        }*/
     }
 
     @Override
