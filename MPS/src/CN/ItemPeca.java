@@ -143,4 +143,22 @@ public class ItemPeca {
         }
 
     }
+    
+    @Override
+    public int hashCode(){
+        
+        return this.identificacao;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        
+        return ((obj instanceof ItemPeca) && (((ItemPeca)obj).getIdentificacao() == this.identificacao));
+    }
+    
+    @Override
+    public String toString(){
+        
+        return "Item de Peça: " + this.identificacao + ", " + this.peca + "," + this.AnoFab + ", " + this.dataAquis + ", " + this.tempoVidaUtilRestante;
+    }
 }

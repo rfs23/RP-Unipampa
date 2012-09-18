@@ -6,7 +6,6 @@ package Repositório;
 
 import CN.AlocacaoPeca;
 import CN.Divisao;
-import CN.ItemPeca;
 import CN.Peca;
 import CN.Semeadora;
 import CN.TipoAlocacao;
