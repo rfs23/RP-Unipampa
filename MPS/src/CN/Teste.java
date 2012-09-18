@@ -66,21 +66,21 @@ public class Teste {
 
         /*Divisao div = new Divisao("Div1", sem1, TipoAlocacao.Semeadora);
 
-        System.out.println(div.getSemeadora().getAno());
+         System.out.println(div.getSemeadora().getAno());
 
 
-        div.setSemeadora(sem1, new Teste(""));
-        div.setSemeadora(sem1, new Teste(""));
-        div.setSemeadora(sem2, new Teste(""));
-        div.setSemeadora(null, new Teste(""));
+         div.setSemeadora(sem1, new Teste(""));
+         div.setSemeadora(sem1, new Teste(""));
+         div.setSemeadora(sem2, new Teste(""));
+         div.setSemeadora(null, new Teste(""));
 
-        sem1.excluirDivisao(1);
+         sem1.excluirDivisao(1);
 
-        System.out.println(div.getSemeadora());
-        div.setSemeadora(sem2, new Teste(""));
-        System.out.println(div.getSemeadora());
+         System.out.println(div.getSemeadora());
+         div.setSemeadora(sem2, new Teste(""));
+         System.out.println(div.getSemeadora());
 
-        System.out.println(div.getSemeadora().getAno());*/
+         System.out.println(div.getSemeadora().getAno());*/
 
 
         System.out.println(sem1.listarDivisoes());
@@ -104,39 +104,64 @@ public class Teste {
 
         try {
 
-            new CadastroSemeadoras(dbSem).deleteSemeadora(2);
+            new CadastroSemeadoras(dbSem).deleteSemeadora(1);
         } catch (DeleçãoException de) {
 
             de.getRTException().printStackTrace();
         }
     }
 
-   /* public static void testeIntegridadeItemPeca() {
-        Semeadora sem = new Semeadora("sem", "sem", 1990);
-        sem.addDivisao("Div", TipoAlocacao.Semeadora);
-        ItemPeca itemPeca = new ItemPeca(1, new Date(), new Peca("", TipoPeca.Teste), 100);
-        ItemPeca itemPeca2 = new ItemPeca(2, new Date(), new Peca("", TipoPeca.Teste), 100);
-        AlocacaoPeca alocPeca = new AlocacaoPeca(itemPeca, div);
-        AlocacaoPeca alocPeca2 = new AlocacaoPeca(itemPeca, div);
-        alocPeca.setItemPeca(itemPeca2);
-    }*/
-
+    /* public static void testeIntegridadeItemPeca() {
+     Semeadora sem = new Semeadora("sem", "sem", 1990);
+     sem.addDivisao("Div", TipoAlocacao.Semeadora);
+     ItemPeca itemPeca = new ItemPeca(1, new Date(), new Peca("", TipoPeca.Teste), 100);
+     ItemPeca itemPeca2 = new ItemPeca(2, new Date(), new Peca("", TipoPeca.Teste), 100);
+     AlocacaoPeca alocPeca = new AlocacaoPeca(itemPeca, div);
+     AlocacaoPeca alocPeca2 = new AlocacaoPeca(itemPeca, div);
+     alocPeca.setItemPeca(itemPeca2);
+     }*/
     public static void testeGeraCodigoPeca() {
 
-        Peca p = new Peca("teste", TipoPeca.Teste);
+        Peca p = new Peca("teste", TipoPeca.Mancal);
         System.out.println(p.getIdentificacao());
 
         ItemPeca itemPeca = new ItemPeca(1990, new Date(), p, 100);
         System.out.println(itemPeca.getIdentificacao());
     }
-    
-    public static void testeTipoAlocacao(){
-        
-        Peca p = new Peca (1, "marchesan", TipoPeca.Teste);
+
+    public static void testeTipoAlocacao() {
+
+        Peca p = new Peca(1, "marchesan", TipoPeca.Mancal);
         ItemPeca iPeca = new ItemPeca(2011, new Date(), p, 200);
         Semeadora sem = new Semeadora("3000", "CASE", 2010);
         sem.addDivisao("linha 1", TipoAlocacao.Linha);
         sem.addPeca(1, 1, 2011, new Date(), p, 200);
+    }
+
+    public static void testeInsertSemeadora() {
+
+        Peca p = new Peca(1, "marchesan", TipoPeca.Mancal);
+        ItemPeca iPeca = new ItemPeca(1, 2011, new Date(), p, 200);
+        Semeadora sem = new Semeadora("3000", "CASE", 2010);
+        sem.addDivisao("linha 1", TipoAlocacao.Linha);
+        sem.addPeca(1, 1, 2011, new Date(), p, 200);
+
+        System.out.println(sem.selecionarDivisao(1).selecionarPeca(1).getItemPeca().getAlocPeca());
+        //   AlocacaoPeca alocPeca = new AlocacaoPeca(iPeca, div);
+
+        try {
+
+            new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).insertSemeadora(sem);
+        } catch (InserçãoException ie) {
+
+            ie.getRTException().printStackTrace();
+        }
+
+    }
+
+    public static void testeSelectSemeadora() {
+
+        Semeadora sem = new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).selectSemeadora(1);
     }
 
     /**
@@ -144,17 +169,6 @@ public class Teste {
      */
     public static void main(String[] args) {
         
-        Peca p = new Peca (1, "marchesan", TipoPeca.Teste);
-        ItemPeca iPeca = new ItemPeca(1,2011, new Date(), p, 200);
-        Semeadora sem = new Semeadora("3000", "CASE", 2010);
-        sem.addDivisao("linha 1", TipoAlocacao.Linha);
-        sem.addPeca(1, 1, 2011, new Date(), p, 200);
-        
-        System.out.println(sem.selecionarDivisao(1).selecionarPeca(1).getItemPeca().getAlocPeca());
-     //   AlocacaoPeca alocPeca = new AlocacaoPeca(iPeca, div);
-        
-        new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).insertSemeadora(sem);
-        
-        new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).deleteSemeadora(sem.getIdentificacao());
+        testeDeleçãoSemeadora();
     }
 }

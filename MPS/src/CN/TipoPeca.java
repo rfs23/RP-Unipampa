@@ -2,19 +2,12 @@ package CN;
 
 public enum TipoPeca {
 
-    Teste {
-        int estVidaUtil = 0;
-
-        @Override
-        public void setEstVidaUtil(int estVidaUtil){
-            
-            this.estVidaUtil = estVidaUtil;
-        }
+    Mancal {
         
         @Override
         public int getEstVidaUtil(){
             
-            return this.estVidaUtil;
+            return 200;
         }
         
         @Override
@@ -22,10 +15,13 @@ public enum TipoPeca {
             
             return TipoAlocacao.Linha;
         }
+        
+        @Override
+        public int getCodTipoPeca(){
+            
+            return 1;
+        }
     };
-
-    public void setEstVidaUtil(int estVidaUtil) {
-    }
 
     public int getEstVidaUtil() {
         return 0;
@@ -34,5 +30,10 @@ public enum TipoPeca {
     public TipoAlocacao getTipoAlocacao(){
         
         return null;
+    }
+    
+    public int getCodTipoPeca(){
+        
+        return 0;
     }
 }

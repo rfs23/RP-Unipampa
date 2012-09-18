@@ -31,6 +31,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
     private AcessoBD sgbd;
     private String sql;
     private ResultSet result;
+    private Semeadora semeadora;
 
     public DBSemeadora(AcessoBD sgbd) {
 
@@ -47,7 +48,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
     public void insertSemeadora(Semeadora semeadora) throws InserçãoException {
 
         sql = "insert into semeadora values ( "
-                + semeadora.getIdentificacao() + ", '"+ semeadora.getModelo() + "', '" + semeadora.getMarca() + "', " + semeadora.getAno()
+                + semeadora.getIdentificacao() + ", '" + semeadora.getModelo() + "', '" + semeadora.getMarca() + "', " + semeadora.getAno()
                 + ", '" + semeadora.getDataRegistro().getDate() + "/" + (semeadora.getDataRegistro().getMonth() + 1)
                 + "/" + (semeadora.getDataRegistro().getYear() + 1900) + "')";
 
@@ -61,41 +62,42 @@ public class DBSemeadora implements RepositórioSemeadoras {
         }
 
     }
-    
-    private void insertDivisao(List<Divisao> divisoes) throws InserçãoException{
-        
-        try{
-            
-            for(Divisao div: divisoes){
-                
+
+    private void insertDivisao(List<Divisao> divisoes) throws InserçãoException {
+
+        try {
+
+            for (Divisao div : divisoes) {
+
                 sql = "insert into divisao values (" + div.getSemeadora().getIdentificacao() + ", " + div.getIdentificao() + ", '" + div.getNome() + "', " + div.getTipoAloc().getCodTipoAlocacao() + ")";
                 sgbd.executeSQL(sql);
                 insertAlocacoesPeca(div.listarPecas());
             }
-        }catch(SQLException sqle){
-            
-            throw new InserçãoException ("Não foi possível adicionar a divisão no banco de dados", sqle);
+        } catch (SQLException sqle) {
+
+            throw new InserçãoException("Não foi possível adicionar a divisão no banco de dados", sqle);
         }
     }
-    
-    private void insertAlocacoesPeca(List<AlocacaoPeca> alocacoes) throws InserçãoException{
-        
-        try{
-            
-            for(AlocacaoPeca alocPeca: alocacoes){
-                
-                sql = "update itempeca set datainclusao='" + alocPeca.getDataInclusaoItemPeca().getDate() + "/" + (alocPeca.getDataInclusaoItemPeca().getMonth()+1) + "/" 
+
+    private void insertAlocacoesPeca(List<AlocacaoPeca> alocacoes) throws InserçãoException {
+
+        try {
+
+            for (AlocacaoPeca alocPeca : alocacoes) {
+
+                sql = "update itempeca set datainclusao='" + alocPeca.getDataInclusaoItemPeca().getDate() + "/" + (alocPeca.getDataInclusaoItemPeca().getMonth() + 1) + "/"
                         + (alocPeca.getDataInclusaoItemPeca().getYear() + 1900) + "'"
                         + ", coddivisao=" + alocPeca.getDivisao().getIdentificao() + ", "
                         + "codsem=" + alocPeca.getDivisao().getSemeadora().getIdentificacao() + " where coditempeca=" + alocPeca.getItemPeca().getIdentificacao();
                 System.out.println(sql);
                 sgbd.executeSQL(sql);
             }
-        }catch(SQLException sqle){
-            
-            throw new InserçãoException("Não foi possível inserir a alocação de peça no banco de dados",sqle);
+        } catch (SQLException sqle) {
+
+            throw new InserçãoException("Não foi possível inserir a alocação de peça no banco de dados", sqle);
         }
     }
+
     /**
      * Remove do banco de dados um registro de semeadora que tenha o código
      * passado como parâmetro.
@@ -107,17 +109,17 @@ public class DBSemeadora implements RepositórioSemeadoras {
     @Override
     public void deleteSemeadora(int codSem) throws DeleçãoException {
 
-        sql = "update itempeca set datainclusao=null where codsem="+ codSem;
-        
-        try{
-            
+        sql = "update itempeca set datainclusao=null where codsem=" + codSem;
+
+        try {
+
             sgbd.executeSQL(sql);
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new AtualizaçãoException("Não foi possível alterar o valor "
-                    + "da data da inclusão da peça para itens de peça no banco de dados",sqle);
+                    + "da data da inclusão da peça para itens de peça no banco de dados", sqle);
         }
-        
+
         sql = "delete from semeadora where codsem=" + codSem;
         try {
 
@@ -137,7 +139,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
     @Override
     public void updateSemeadora(int codSem, Semeadora semeadora) throws AtualizaçãoException {
 
-        sql = "update semeadora set nome='" + semeadora.getModelo() + "', marca='" + semeadora.getMarca() + "', ano='" + semeadora.getAno() + "', datainclusao='" + semeadora.getDataRegistro().getDate() + "/" + (semeadora.getDataRegistro().getMonth() + 1)
+        sql = "update semeadora set modelo='" + semeadora.getModelo() + "', marca='" + semeadora.getMarca() + "', ano='" + semeadora.getAno() + "', datainclusao='" + semeadora.getDataRegistro().getDate() + "/" + (semeadora.getDataRegistro().getMonth() + 1)
                 + "/" + (semeadora.getDataRegistro().getYear() + 1900) + "'";
 
         try {
@@ -162,50 +164,47 @@ public class DBSemeadora implements RepositórioSemeadoras {
         result = null;
 
         try {
+
             result = sgbd.selectData(sql);
         } catch (SQLException ex) {
 
             throw new ConsultaException("Não foi possível consultar a semeadora no banco de dados", ex);
         }
 
-        Semeadora semeadora = null;
 
         try {
 
-            semeadora = new Semeadora(result.getString("nome"), result.getString("marca"),
-                    (Integer) result.getObject("ano"));
-            semeadora.setIdentificacao(result.getInt("codsem"));
-            semeadora.setDataRegistro(result.getDate("dataRegistro"));
-            
+            if (result.next()) {
+
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+            }
+
         } catch (SQLException ex) {
 
-            throw new ConsultaException("Coluna nome, marca ou ano não existe", ex);
+            throw new ConsultaException("Coluna modelo, marca ou ano não existe", ex);
         }
-        
-        for(Divisao divisao: selectDivisoesSemeadora(codSem).values()){
-            
-            semeadora.addDivisao(divisao.getIdentificao(), divisao.getNome(), divisao.getTipoAloc());
-            for(AlocacaoPeca alocPeca: selectAlocacoesPecaSemeadora(codSem, divisao.getIdentificao()).values()){
-                
-                semeadora.addPeca(divisao.getIdentificao(), alocPeca.getItemPeca().getIdentificacao(), 
-                        alocPeca.getItemPeca().getAnoFab(), alocPeca.getItemPeca().getDataAquis(), alocPeca.getItemPeca().getPeca(),
-                        alocPeca.getItemPeca().getTempoVidaUtilRestante(), alocPeca.getDataInclusaoItemPeca());
-            }
-        }
-        
+
+        /*for (Divisao divisao : selectDivisoesSemeadora(codSem).values()) {
+
+         semeadora.addDivisao(divisao.getIdentificao(), divisao.getNome(), divisao.getTipoAloc());
+         for (AlocacaoPeca alocPeca : selectAlocacoesPecaSemeadora(codSem, divisao.getIdentificao()).values()) {
+
+         semeadora.addPeca(divisao.getIdentificao(), alocPeca.getItemPeca().getIdentificacao(),
+         alocPeca.getItemPeca().getAnoFab(), alocPeca.getItemPeca().getDataAquis(), alocPeca.getItemPeca().getPeca(),
+         alocPeca.getItemPeca().getTempoVidaUtilRestante(), alocPeca.getDataInclusaoItemPeca());
+         }
+         }*/
+
+        addDivisoes(codSem);
+        addPecas(codSem);
+
         return semeadora;
 
     }
 
-    /**
-     *
-     * @param codSem
-     * @return
-     * @throws ConsultaException
-     */
-    private Map<Integer, Divisao> selectDivisoesSemeadora(int codSem) throws ConsultaException {
+    private void addDivisoes(int codsem) throws ConsultaException {
 
-        sql = "select * from divisao where codSem=" + codSem;
+        sql = "select * from divisao where codsem=" + codsem;
 
         try {
 
@@ -215,203 +214,106 @@ public class DBSemeadora implements RepositórioSemeadoras {
             throw new ConsultaException("Não foi possível consultar as divisões da semeadora", ex);
         }
 
-        HashMap<Integer, Divisao> divisoes = new HashMap<Integer, Divisao>();
         try {
+
             while (result.next()) {
 
-                Divisao div = new Divisao(result.getInt("coddivisao"), result.getString("nome"), selectTipoAlocacao(result.getInt("codtipoalocacao")));
-                divisoes.put(div.getIdentificao(), div);
+                semeadora.addDivisao((Integer) result.getObject("coddivisao"), result.getString("nome"), getTipoAlocacao(result.getInt("codtipoalocacao")));
             }
         } catch (SQLException ex) {
 
-            throw new ConsultaException("A linha que está tentando acessar não consta na consulta", ex);
+            throw new ConsultaException("A divisão que estás tentando acessar não consta na consulta", ex);
         }
-
-        return divisoes;
     }
 
-    /**
-     *
-     * @param codSem
-     * @param codDivisao
-     * @return
-     * @throws ConsultaException
-     */
-    private Map<Integer, AlocacaoPeca> selectAlocacoesPecaSemeadora(int codSem, int codDivisao) throws ConsultaException {
+    private void addPecas(int codsem) throws ConsultaException {
 
-        sql = "select * from itempeca where codsem=" + codSem + " and coddivisao=" + codDivisao;
+        sql = "select * from divisao inner join itempeca using(codsem, coddivisao) inner join peca using (codpeca, codtipopeca) where codsem=" + codsem;
 
-         try {
+        try {
 
-         result = sgbd.selectData(sql);
-         } catch (SQLException ex) {
+            result = sgbd.selectData(sql);
+        } catch (SQLException sqle) {
 
-         throw new ConsultaException("Não foi possível consultar as alocações da divisão " + codDivisao + " da semeadora " + codSem, ex);
-         }
-
-        HashMap<Integer, AlocacaoPeca> alocacoes = new HashMap<Integer, AlocacaoPeca>();
-        Map<Integer, ItemPeca> itensDivisao = new HashMap<Integer, ItemPeca>();
+            throw new ConsultaException("Não foi possível consultar as peças alocadas à semeadora", sqle);
+        }
 
         try {
 
             while (result.next()) {
 
-                Peca peca = selectPeca(result.getInt("codtipopeca"), result.getInt("codpeca"));
-                //ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
-                //itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
- //correto               AlocacaoPeca alocPeca = new AlocacaoPeca();
-
+                Peca p = new Peca(result.getInt("codPeca"), result.getString("fabricante"), getTipoPeca(result.getInt("codtipopeca")));
+                semeadora.addPeca((Integer) result.getObject("coddivisao"), result.getInt("coditempeca"), result.getInt("anofab"),
+                        result.getDate("dataaquis"), p, result.getInt("tempovidautilrestante"), result.getDate("datainclusao"));
             }
         } catch (SQLException sqle) {
 
-            throw new ConsultaException("Não foi possível acessar o resultado da consulta para alocações de peça", sqle);
+            throw new ConsultaException("Não foi possível acessar o resultado da consulta para as peças alocadas à semeadora", sqle);
         }
-
-        return alocacoes;
     }
 
-    /**
-     *
-     * @return
-     */
-    private Map<Integer, ItemPeca> selectItensPecas(int codSem, int codDivisao) throws ConsultaException {
+    private TipoAlocacao getTipoAlocacao(int codTipoAlocacao) {
 
-        String sql = "select * from itempeca where codsem=" + codSem + " and codDivisao=" + codDivisao;
-        ResultSet result;
+        for (TipoAlocacao tipoAloc : TipoAlocacao.values()) {
 
-        try {
+            if (tipoAloc.getCodTipoAlocacao() == codTipoAlocacao) {
 
-            result = sgbd.selectData(sql);
-        } catch (SQLException sqle) {
-
-            throw new ConsultaException("Não foi possível obter os itens de peças da divisão "
-                    + codDivisao + " da semeadora " + codSem + " através do banco de dados", sqle);
-        }
-
-        HashMap<Integer, ItemPeca> itensPecas = new HashMap<Integer, ItemPeca>();
-
-        try {
-
-            while (result.next()) {
-
-                Peca peca = selectPeca(result.getInt("codtipopeca"), result.getInt("codpeca"));
-              //  ItemPeca itemPeca = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataquis"), peca);
-              //  itensPecas.put(itemPeca.getIdentificacao(), itemPeca);
-            }
-        } catch (SQLException sqle) {
-
-            throw new ConsultaException("Não foi possível acessar o resultado da consulta no banco de dados para itens de peças", sqle);
-        }
-
-        return itensPecas;
-    }
-
-    /**
-     *
-     * @param codTipoPeca
-     * @param codPeca
-     * @return
-     * @throws ConsultaException
-     */
-    private Peca selectPeca(int codTipoPeca, int codPeca) throws ConsultaException {
-
-        sql = "select * from itempeca where codTipoPeca=" + codTipoPeca + " and codPeca=" + codPeca;
-
-        ResultSet result;
-        try {
-
-            result = sgbd.selectData(sql);
-        } catch (SQLException sqle) {
-
-            throw new ConsultaException("Não foi possível obter a peça associada ao item peça do banco de dados", sqle);
-        }
-
-        Peca peca = null;
-
-        try {
-
-            peca = new Peca(result.getInt("codpeca"), result.getString("fabricante"), selectTipoPeca(codTipoPeca));
-        } catch (SQLException sqle) {
-
-            throw new ConsultaException("Não foi possível acessar o resultado da consulta no banco de dados para peça", sqle);
-        }
-
-        return peca;
-    }
-
-    /**
-     *
-     * @param codTipoPeca
-     * @return
-     * @throws ConsultaException
-     */
-    private TipoPeca selectTipoPeca(int codTipoPeca) throws ConsultaException {
-
-        sql = "select nome, estvidautil from TipoPeca where codTipoPeca=" + codTipoPeca;
-
-        ResultSet result = null;
-        try {
-
-            result = sgbd.selectData(sql);
-        } catch (SQLException sqle) {
-
-            throw new ConsultaException("Não foi possível obter o tipo de peça de código " + codTipoPeca, sqle);
-        }
-
-        String nomeTP = null;
-        int estVidaUtilTP = 0;
-        try {
-
-            nomeTP = result.getString("nome");
-            estVidaUtilTP = result.getInt("estvidautil");
-        } catch (SQLException sqle) {
-
-            throw new ConsultaException("Não foi possível acessar os dados da consulta no banco dados para tipo de peça", sqle);
-        }
-
-        TipoPeca tipoPeca = null;
-
-        for (TipoPeca tp : TipoPeca.values()) {
-
-            if (nomeTP.equals(tp.toString())) {
-
-                tipoPeca = tp;
-                tipoPeca.setEstVidaUtil(estVidaUtilTP);
+                return tipoAloc;
             }
         }
 
-        return tipoPeca;
-    }
-    
-    private TipoAlocacao selectTipoAlocacao(int codTipoAlocacao){
-        
-        for(TipoAlocacao ta: TipoAlocacao.values()){
-            
-            if(codTipoAlocacao == ta.getCodTipoAlocacao())
-                return ta;
-        }
-        
         return null;
     }
 
+    private TipoPeca getTipoPeca(int codTipoPeca) {
+
+
+        for (TipoPeca tipoPeca : TipoPeca.values()) {
+
+            if (tipoPeca.getCodTipoPeca() == codTipoPeca) {
+
+                return tipoPeca;
+            }
+        }
+
+        return null;
+    }
+
+    
     /**
      *
      * @return @throws ConsultaException
      */
     @Override
     public Map<Integer, Semeadora> listSemeadoras() throws ConsultaException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     *
-     * @param codSem
-     * @return
-     * @throws ConsultaException
-     */
-    @Override
-    public Map<Integer, Semeadora> selectSemeadorasByCode(int codSem) throws ConsultaException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        sql = "select * from semeadora";
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        }
+        
+        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
+        
+        try{
+            
+            while(result.next()){
+                
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                addDivisoes(semeadora.getIdentificacao());
+                addPecas(semeadora.getIdentificacao());
+                semeadoras.put(semeadora.getIdentificacao(), semeadora);
+            }
+        }catch (SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
+        }
+        
+        return semeadoras;
     }
 
     /**
@@ -422,7 +324,34 @@ public class DBSemeadora implements RepositórioSemeadoras {
      */
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByModelo(String modeloSemeadora) throws ConsultaException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        sql = "select * from semeadora where modelo='" + modeloSemeadora + "'";
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        }
+        
+        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
+        
+        try{
+            
+            while(result.next()){
+                
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                addDivisoes(semeadora.getIdentificacao());
+                addPecas(semeadora.getIdentificacao());
+                semeadoras.put(semeadora.getIdentificacao(), semeadora);
+            }
+        }catch (SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
+        }
+        
+        return semeadoras;
     }
 
     /**
@@ -433,7 +362,34 @@ public class DBSemeadora implements RepositórioSemeadoras {
      */
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByMarca(String marcaSemeadora) throws ConsultaException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        sql = "select * from semeadora where marca='" + marcaSemeadora + "'";
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        }
+        
+        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
+        
+        try{
+            
+            while(result.next()){
+                
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                addDivisoes(semeadora.getIdentificacao());
+                addPecas(semeadora.getIdentificacao());
+                semeadoras.put(semeadora.getIdentificacao(), semeadora);
+            }
+        }catch (SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
+        }
+        
+        return semeadoras;
     }
 
     /**
@@ -444,7 +400,34 @@ public class DBSemeadora implements RepositórioSemeadoras {
      */
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByAno(int ano) throws ConsultaException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        sql = "select * from semeadora where ano='" + ano + "'";
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        }
+        
+        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
+        
+        try{
+            
+            while(result.next()){
+                
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                addDivisoes(semeadora.getIdentificacao());
+                addPecas(semeadora.getIdentificacao());
+                semeadoras.put(semeadora.getIdentificacao(), semeadora);
+            }
+        }catch (SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
+        }
+        
+        return semeadoras;
     }
 
     /**
@@ -453,9 +436,38 @@ public class DBSemeadora implements RepositórioSemeadoras {
      * @return
      * @throws ConsultaException
      */
+    
     @Override
-    public Map<Integer, Semeadora> selectSemeadorasByDataFab(Date dataFab) throws ConsultaException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Map<Integer, Semeadora> selectSemeadorasByDataInclusao(Date dataInclusao) throws ConsultaException {
+        
+        sql = "select * from semeadora where datainclusao='" + dataInclusao.getDate() + "/" + (dataInclusao.getMonth() + 1)
+                + "/" + (dataInclusao.getYear() + 1900) + "'";
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        }
+        
+        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
+        
+        try{
+            
+            while(result.next()){
+                
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                addDivisoes(semeadora.getIdentificacao());
+                addPecas(semeadora.getIdentificacao());
+                semeadoras.put(semeadora.getIdentificacao(), semeadora);
+            }
+        }catch (SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
+        }
+        
+        return semeadoras;
     }
 
     @Override

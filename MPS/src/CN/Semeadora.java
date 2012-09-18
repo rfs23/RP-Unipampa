@@ -30,19 +30,25 @@ public class Semeadora extends Observable {
 
     public Semeadora(String modelo, String marca, int ano) throws ConsultaException {
 
-        this(new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoSemeadora(), modelo, marca, ano);
+        this(new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoSemeadora(), modelo, marca, ano, new Date());
     }
 
     public Semeadora(int identificacao, String modelo, String marca, int ano) {
 
+        this(identificacao, modelo, marca, ano, new Date());
+    }
+
+    public Semeadora(int identificacao, String modelo, String marca, int ano, Date dataRegistro) {
+        
         this.identificacao = identificacao;
         this.modelo = modelo;
         this.marca = marca;
         this.ano = ano;
-        this.dataRegistro = Calendar.getInstance().getTime();
+        this.dataRegistro = dataRegistro;
         this.divisoes = new HashMap<Integer, Divisao>();
     }
 
+    
     /*public Divisao addDivisao(Divisao divisao) {
 
      if(divisao != null){

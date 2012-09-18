@@ -37,7 +37,7 @@ public class CadastroSemeadoras {
     public void insertSemeadora(Semeadora semeadora) throws InserçãoException {
 
         this.repSemeadoras.insertSemeadora(semeadora);
-        
+
         System.out.println("Semeadora adicionada com sucesso!");
     }
 
@@ -59,7 +59,11 @@ public class CadastroSemeadoras {
         if (CadastroSemeadoras.semeadoras.get(codSemeadora) == null) {
 
             Semeadora semeadora = this.repSemeadoras.selectSemeadora(codSemeadora);
-            CadastroSemeadoras.semeadoras.put(semeadora.getIdentificacao(), semeadora);
+
+            if (semeadora != null) {
+
+                CadastroSemeadoras.semeadoras.put(semeadora.getIdentificacao(), semeadora);
+            }
 
             return semeadora;
         } else {
@@ -79,11 +83,6 @@ public class CadastroSemeadoras {
         CadastroSemeadoras.semeadoras = repSemeadoras.listSemeadoras();
     }
 
-    public void selectSemeadorasByCode(int codSem) throws ConsultaException {
-
-        CadastroSemeadoras.semeadoras = repSemeadoras.selectSemeadorasByCode(codSem);
-    }
-
     public void selectSemeadorasByModelo(String modeloSemeadora) throws ConsultaException {
 
         CadastroSemeadoras.semeadoras = repSemeadoras.selectSemeadorasByModelo(modeloSemeadora);
@@ -99,9 +98,9 @@ public class CadastroSemeadoras {
         CadastroSemeadoras.semeadoras = repSemeadoras.selectSemeadorasByAno(ano);
     }
 
-    public void selectSemeadorasByDataFab(Date dataFab) throws ConsultaException {
+    public void selectSemeadorasByDataInclusao(Date dataInclusao) throws ConsultaException {
 
-        CadastroSemeadoras.semeadoras = repSemeadoras.selectSemeadorasByDataFab(dataFab);
+        CadastroSemeadoras.semeadoras = repSemeadoras.selectSemeadorasByDataInclusao(dataInclusao);
     }
 
     public int gerarCódigoSemeadora() throws ConsultaException {

@@ -27,9 +27,7 @@ public interface RepositórioSemeadoras {
     
     Semeadora selectSemeadora(int codSemeadora) throws ConsultaException;
     
-    Map<Integer, Semeadora> listSemeadoras() throws ConsultaException;
-    
-    Map<Integer, Semeadora> selectSemeadorasByCode(int codSem) throws ConsultaException;
+    Map<Integer, Semeadora> listSemeadoras() throws ConsultaException;    
     
     Map<Integer, Semeadora> selectSemeadorasByModelo(String modeloSemeadora) throws ConsultaException;
     
@@ -37,7 +35,7 @@ public interface RepositórioSemeadoras {
     
     Map<Integer, Semeadora> selectSemeadorasByAno (int ano) throws ConsultaException;
     
-    Map<Integer, Semeadora> selectSemeadorasByDataFab (Date dataFab) throws ConsultaException;
+    Map<Integer, Semeadora> selectSemeadorasByDataInclusao (Date dataInclusao) throws ConsultaException;
     
     int getMaxCodSemeadora() throws ConsultaException;
     
