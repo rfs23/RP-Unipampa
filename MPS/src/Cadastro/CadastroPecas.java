@@ -54,13 +54,13 @@ public class CadastroPecas {
 
     public Peca selectPeca(int codPeca) throws ConsultaException {
         
-        if(pecas.containsKey(codPeca)){
+        if(!pecas.containsKey(codPeca)){
             
-            return pecas.get(codPeca);
-        }else{
-            
-            return repPeca.selectPeca(codPeca);
+            Peca peca = repPeca.selectPeca(codPeca);
+            pecas.put(peca.getIdentificacao(), peca);
         }
+        
+        return pecas.get(codPeca);
     }
 
     public void selectPecaByFabricante(String fabricante) throws ConsultaException {

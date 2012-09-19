@@ -4,11 +4,13 @@
  */
 package CN;
 
+import Cadastro.CadastroItensPeca;
 import Cadastro.CadastroPecas;
 import Cadastro.CadastroSemeadoras;
 import Exceções.DelecaoException;
 import Exceções.InsercaoException;
 import Repositório.AcessoPostgres;
+import Repositório.DBItemPeca;
 import Repositório.DBPeca;
 import Repositório.DBSemeadora;
 import java.util.Date;
@@ -191,12 +193,34 @@ public class Teste {
         System.out.println(CadastroPecas.pecas);
     }
 
+    public static void testeInsertItemPeca() {
+
+        Peca peca = new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).selectPeca(1);
+        ItemPeca iPeca = new ItemPeca(2010, new Date(), peca, peca.getTipo().getEstVidaUtil());
+
+        new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).insertItemPeca(iPeca);
+    }
+
+    public static void testeDeleteItemPeca() {
+
+        new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).deleteItemPeca(3);
+    }
+
+    public static void testeUpdateItemPeca() {
+
+        Peca peca = new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).selectPeca(1);
+        ItemPeca iPeca = new ItemPeca(2010, new Date(), peca, 100);
+
+        new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).updateItemPeca(2, iPeca);
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-        testeInsertSemeadora();
-        
+
+        new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).selectItensPecaNaoAlocadosByAnoFabricacao(2010);
+
+        System.out.println(CadastroItensPeca.itensPeca);
     }
 }

@@ -103,7 +103,7 @@ public class DBPeca implements RepositorioPeca {
     @Override
     public Peca selectPeca(int codPeca) throws ConsultaException {
 
-        sql = "select from peca where codpeca=" + codPeca;
+        sql = "select * from peca where codpeca=" + codPeca;
 
         try {
 
