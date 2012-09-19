@@ -8,19 +8,19 @@ package Exceções;
  *
  * @author rafael
  */
-public class AtualizaçãoException extends RuntimeException {
+public class InsercaoException extends RuntimeException {
 
     private String message;
     private Exception exception;
 
-    public AtualizaçãoException(String message, Exception exception) {
+    public InsercaoException(String message, Exception exception) {
 
         super(message);
         this.message = message;
         this.exception = exception;
     }
 
-    public AtualizaçãoException(String message) {
+    public InsercaoException(String message) {
 
         this(message, null);
     }
@@ -31,7 +31,7 @@ public class AtualizaçãoException extends RuntimeException {
         return this.message;
     }
 
-    public Exception getException() {
+    public Exception getRTException() {
 
         return exception;
     }

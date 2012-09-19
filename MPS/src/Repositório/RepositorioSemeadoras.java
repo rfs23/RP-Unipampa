@@ -6,10 +6,10 @@ package Repositório;
 
 import Exceções.AnoInvalidoException;
 import CN.Semeadora;
-import Exceções.AtualizaçãoException;
+import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
-import Exceções.DeleçãoException;
-import Exceções.InserçãoException;
+import Exceções.DelecaoException;
+import Exceções.InsercaoException;
 import java.util.Date;
 import java.util.Map;
 
@@ -17,13 +17,13 @@ import java.util.Map;
  *
  * @author rafael
  */
-public interface RepositórioSemeadoras {
+public interface RepositorioSemeadoras {
     
-    void insertSemeadora(Semeadora semeadora) throws InserçãoException;
+    void insertSemeadora(Semeadora semeadora) throws InsercaoException;
     
-    void deleteSemeadora(int codSemeadora) throws DeleçãoException;
+    void deleteSemeadora(int codSemeadora) throws DelecaoException;
     
-    void updateSemeadora(int codSemeadora, Semeadora semeadora) throws AtualizaçãoException;
+    void updateSemeadora(int codSemeadora, Semeadora semeadora) throws AtualizacaoException;
     
     Semeadora selectSemeadora(int codSemeadora) throws ConsultaException;
     

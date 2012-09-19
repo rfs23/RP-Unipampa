@@ -8,19 +8,19 @@ package Exceções;
  *
  * @author rafael
  */
-public class DeleçãoException extends RuntimeException {
+public class DelecaoException extends RuntimeException {
 
     private String message;
     private Exception exception;
 
-    public DeleçãoException(String message, Exception exception) {
+    public DelecaoException(String message, Exception exception) {
 
         super(message);
         this.message = message;
         this.exception = exception;
     }
 
-    public DeleçãoException(String message) {
+    public DelecaoException(String message) {
 
         this(message, null);
     }

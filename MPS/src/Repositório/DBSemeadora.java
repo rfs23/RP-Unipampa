@@ -10,10 +10,10 @@ import CN.Peca;
 import CN.Semeadora;
 import CN.TipoAlocacao;
 import CN.TipoPeca;
-import Exceções.AtualizaçãoException;
+import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
-import Exceções.DeleçãoException;
-import Exceções.InserçãoException;
+import Exceções.DelecaoException;
+import Exceções.InsercaoException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author rafael
  */
-public class DBSemeadora implements RepositórioSemeadoras {
+public class DBSemeadora implements RepositorioSemeadoras {
 
     private AcessoBD sgbd;
     private String sql;
@@ -44,7 +44,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
      * @throws SQLException Caso haja algum problema com o banco de dados.
      */
     @Override
-    public void insertSemeadora(Semeadora semeadora) throws InserçãoException {
+    public void insertSemeadora(Semeadora semeadora) throws InsercaoException {
 
         sql = "insert into semeadora values ( "
                 + semeadora.getIdentificacao() + ", '" + semeadora.getModelo() + "', '" + semeadora.getMarca() + "', " + semeadora.getAno()
@@ -57,12 +57,12 @@ public class DBSemeadora implements RepositórioSemeadoras {
             insertDivisao(semeadora.listarDivisoes());
         } catch (SQLException sqle) {
 
-            throw new InserçãoException("Não foi possível incluir a semeadora no banco de dados", sqle);
+            throw new InsercaoException("Não foi possível incluir a semeadora no banco de dados", sqle);
         }
 
     }
 
-    private void insertDivisao(List<Divisao> divisoes) throws InserçãoException {
+    private void insertDivisao(List<Divisao> divisoes) throws InsercaoException {
 
         try {
 
@@ -74,11 +74,11 @@ public class DBSemeadora implements RepositórioSemeadoras {
             }
         } catch (SQLException sqle) {
 
-            throw new InserçãoException("Não foi possível adicionar a divisão no banco de dados", sqle);
+            throw new InsercaoException("Não foi possível adicionar a divisão no banco de dados", sqle);
         }
     }
 
-    private void insertAlocacoesPeca(List<AlocacaoPeca> alocacoes) throws InserçãoException {
+    private void insertAlocacoesPeca(List<AlocacaoPeca> alocacoes) throws InsercaoException {
 
         try {
 
@@ -93,7 +93,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
             }
         } catch (SQLException sqle) {
 
-            throw new InserçãoException("Não foi possível inserir a alocação de peça no banco de dados", sqle);
+            throw new InsercaoException("Não foi possível inserir a alocação de peça no banco de dados", sqle);
         }
     }
 
@@ -106,7 +106,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
      * do banco de dados.
      */
     @Override
-    public void deleteSemeadora(int codSem) throws DeleçãoException {
+    public void deleteSemeadora(int codSem) throws DelecaoException {
 
         sql = "update itempeca set datainclusao=null where codsem=" + codSem;
 
@@ -115,7 +115,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
             sgbd.executeSQL(sql);
         } catch (SQLException sqle) {
 
-            throw new AtualizaçãoException("Não foi possível alterar o valor "
+            throw new AtualizacaoException("Não foi possível alterar o valor "
                     + "da data da inclusão da peça para itens de peça no banco de dados", sqle);
         }
 
@@ -125,7 +125,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
             this.sgbd.executeSQL(sql);
         } catch (SQLException sqle) {
 
-            throw new DeleçãoException("Não foi possível deletar a semeadora do banco de dados", sqle);
+            throw new DelecaoException("Não foi possível deletar a semeadora do banco de dados", sqle);
         }
     }
 
@@ -136,7 +136,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
      * @throws SQLException
      */
     @Override
-    public void updateSemeadora(int codSem, Semeadora semeadora) throws AtualizaçãoException {
+    public void updateSemeadora(int codSem, Semeadora semeadora) throws AtualizacaoException {
 
         sql = "update semeadora set modelo='" + semeadora.getModelo() + "', marca='" + semeadora.getMarca() + "', ano='" + semeadora.getAno() + "', datainclusao='" + semeadora.getDataRegistro().getDate() + "/" + (semeadora.getDataRegistro().getMonth() + 1)
                 + "/" + (semeadora.getDataRegistro().getYear() + 1900) + "'";
@@ -146,7 +146,7 @@ public class DBSemeadora implements RepositórioSemeadoras {
             this.sgbd.executeSQL(sql);
         } catch (SQLException sqle) {
 
-            throw new AtualizaçãoException("Não foi possível atualizar a semeadora no banco de dados", sqle);
+            throw new AtualizacaoException("Não foi possível atualizar a semeadora no banco de dados", sqle);
         }
     }
 

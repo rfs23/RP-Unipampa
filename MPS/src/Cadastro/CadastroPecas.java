@@ -5,10 +5,10 @@
 package Cadastro;
 
 import CN.Peca;
-import Exceções.AtualizaçãoException;
+import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
-import Exceções.DeleçãoException;
-import Exceções.InserçãoException;
+import Exceções.DelecaoException;
+import Exceções.InsercaoException;
 import Repositório.RepositorioPeca;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class CadastroPecas {
         }
     }
 
-    public void insertPeca(Peca peca) throws InserçãoException {
+    public void insertPeca(Peca peca) throws InsercaoException {
         
         if (peca != null){
             
@@ -40,13 +40,13 @@ public class CadastroPecas {
         }
     }
 
-    public void deletePeca(int codPeca) throws DeleçãoException {
+    public void deletePeca(int codPeca) throws DelecaoException {
         
         repPeca.deletePeca(codPeca);
         pecas.remove(codPeca);
     }
 
-    public void updatePeca(int codPeca, Peca peca) throws AtualizaçãoException {
+    public void updatePeca(int codPeca, Peca peca) throws AtualizacaoException {
         
         repPeca.updatePeca(codPeca, peca);
         pecas.put(codPeca, peca);

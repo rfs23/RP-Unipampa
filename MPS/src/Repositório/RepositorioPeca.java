@@ -5,10 +5,10 @@
 package Repositório;
 
 import CN.Peca;
-import Exceções.AtualizaçãoException;
+import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
-import Exceções.DeleçãoException;
-import Exceções.InserçãoException;
+import Exceções.DelecaoException;
+import Exceções.InsercaoException;
 import java.util.Map;
 
 /**
@@ -17,11 +17,11 @@ import java.util.Map;
  */
 public interface RepositorioPeca {
     
-    void insertPeca(Peca peca) throws InserçãoException;
+    void insertPeca(Peca peca) throws InsercaoException;
     
-    void deletePeca(int codPeca) throws DeleçãoException;
+    void deletePeca(int codPeca) throws DelecaoException;
     
-    void updatePeca(int codPeca, Peca peca) throws AtualizaçãoException;
+    void updatePeca(int codPeca, Peca peca) throws AtualizacaoException;
     
     Peca selectPeca(int codPeca) throws ConsultaException;
     

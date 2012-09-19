@@ -2,19 +2,17 @@ package CN;
 
 import Cadastro.CadastroSemeadoras;
 import Exceções.ConsultaException;
+import Exceções.DataInvalidaException;
+import Exceções.ValorNuloException;
 import Repositório.AcessoPostgres;
 import Repositório.DBSemeadora;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
-import java.util.TreeMap;
 
 public class Semeadora extends Observable {
 
@@ -26,29 +24,133 @@ public class Semeadora extends Observable {
     private Map<Integer, Divisao> divisoes;
     private Map<Integer, Atividade> atividades;
     private Map<Integer, Manutencao> manutencoes;
-    //private AdministradorManutencoes administradorManutencoes;
 
-    public Semeadora(String modelo, String marca, int ano) throws ConsultaException {
+    public Semeadora(String modelo, String marca, int ano) throws ConsultaException, ValorNuloException, DataInvalidaException {
 
         this(new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoSemeadora(), modelo, marca, ano, new Date());
     }
 
-    public Semeadora(int identificacao, String modelo, String marca, int ano) {
+    public Semeadora(int identificacao, String modelo, String marca, int ano) throws ValorNuloException {
 
         this(identificacao, modelo, marca, ano, new Date());
     }
 
-    public Semeadora(int identificacao, String modelo, String marca, int ano, Date dataRegistro) {
-        
-        this.identificacao = identificacao;
-        this.modelo = modelo;
-        this.marca = marca;
-        this.ano = ano;
-        this.dataRegistro = dataRegistro;
+    public Semeadora(int identificacao, String modelo, String marca, int ano, Date dataRegistro) throws ValorNuloException, DataInvalidaException {
+
+        setIdentificacao(identificacao);
+        setModelo(modelo);
+        setMarca(marca);
+        setAno(ano);
+        setDataRegistro(dataRegistro);
+
         this.divisoes = new HashMap<Integer, Divisao>();
     }
 
-    
+    public final void setModelo(String modelo) throws ValorNuloException {
+
+        if (modelo == null || modelo.equals("")) {
+
+            throw new ValorNuloException("Deve ser informado o modelo da semeadora");
+        }
+
+        this.modelo = modelo;
+    }
+
+    public final void setMarca(String marca) throws ValorNuloException {
+
+        if (marca == null || marca.equals("")) {
+
+            throw new ValorNuloException("Deve ser informada a marca da semeadora");
+        }
+
+        this.marca = marca;
+    }
+
+    public final void setAno(int ano) throws ValorNuloException {
+
+        if (ano <= 0) {
+
+            throw new ValorNuloException("Deve ser informado o ano de fabrincação da semeadora");
+        }
+        this.ano = ano;
+    }
+
+    /**
+     * @param identificacao the identificacao to set
+     */
+    public final void setIdentificacao(int identificacao) throws ValorNuloException {
+
+        if (identificacao <= 0) {
+
+            throw new ValorNuloException("A semeadora deve ter um código válido");
+        }
+
+        this.identificacao = identificacao;
+    }
+
+    /**
+     * @param dataRegistro the dataRegistro to set
+     */
+    public final void setDataRegistro(Date dataRegistro) throws ValorNuloException, DataInvalidaException {
+
+        if (dataRegistro == null) {
+
+            throw new ValorNuloException("Deve ser informada a data em que a semeadora está sendo registrada");
+        }
+        
+        if(dataRegistro.after(new Date())){
+            
+            throw new DataInvalidaException("Data informada é posterior à data atual", dataRegistro);
+        }
+        
+        if((new Date().getYear() - dataRegistro.getYear()) > 50){
+            
+            throw new DataInvalidaException("Data informada muito distante da data atual", dataRegistro);
+        }
+
+        this.dataRegistro = dataRegistro;
+    }
+
+    /**
+     * @return the identificacao
+     */
+    public int getIdentificacao() {
+
+        return identificacao;
+    }
+
+    /**
+     * @return the modelo
+     */
+    public String getModelo() {
+
+        return modelo;
+    }
+
+    /**
+     * @return the marca
+     */
+    public String getMarca() {
+
+        return marca;
+    }
+
+    /**
+     * @return the ano
+     */
+    public int getAno() {
+
+        return ano;
+    }
+
+    /**
+     * @return the dataRegistro
+     */
+    public Date getDataRegistro() {
+
+        return dataRegistro;
+    }
+
     /*public Divisao addDivisao(Divisao divisao) {
 
      if(divisao != null){
@@ -112,7 +214,7 @@ public class Semeadora extends Observable {
 
     }
 
-    public List listarDivisoes() {
+    public List<Divisao> listarDivisoes() {
 
         return new ArrayList<Divisao>(this.divisoes.values());
     }
@@ -229,62 +331,6 @@ public class Semeadora extends Observable {
      */
     public boolean matches(Map caracteristicas) {
         return false;
-    }
-
-    /**
-     * @return the identificacao
-     */
-    public int getIdentificacao() {
-
-        return identificacao;
-    }
-
-    /**
-     * @return the modelo
-     */
-    public String getModelo() {
-
-        return modelo;
-    }
-
-    /**
-     * @return the marca
-     */
-    public String getMarca() {
-
-        return marca;
-    }
-
-    /**
-     * @return the ano
-     */
-    public int getAno() {
-
-        return ano;
-    }
-
-    /**
-     * @return the dataRegistro
-     */
-    public Date getDataRegistro() {
-
-        return dataRegistro;
-    }
-
-    /**
-     * @param identificacao the identificacao to set
-     */
-    public void setIdentificacao(int identificacao) {
-
-        this.identificacao = identificacao;
-    }
-
-    /**
-     * @param dataRegistro the dataRegistro to set
-     */
-    public void setDataRegistro(Date dataRegistro) {
-
-        this.dataRegistro = dataRegistro;
     }
 
     @Override

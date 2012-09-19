@@ -5,6 +5,8 @@
 package CN;
 
 import Cadastro.CadastroItensPeca;
+import Exceções.DataInvalidaException;
+import Exceções.ValorNuloException;
 import Repositório.AcessoPostgres;
 import Repositório.DBItemPeca;
 import java.util.Date;
@@ -16,23 +18,24 @@ import java.util.Date;
 public class ItemPeca {
 
     private int identificacao;
-    private int AnoFab;
+    private int anoFab;
     private Date dataAquis;
     private int tempoVidaUtilRestante;
     private Peca peca;
     private AlocacaoPeca alocPeca;
 
 
-    public ItemPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
+    public ItemPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException {
 
         this(new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).geraCodigoItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante);
     }
 
-    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
+    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException{
 
-        this.identificacao = identificacao;
-        this.AnoFab = anoFab;
-        this.dataAquis = dataAquis;
+        setIdentificacao(identificacao);
+        setAnoFab(anoFab);
+        setDataAquis(dataAquis);
+
         this.peca = peca;
         this.tempoVidaUtilRestante = tempoVidaUtilRestante;
     }
@@ -40,7 +43,7 @@ public class ItemPeca {
     /**
      * @return the identificacao
      */
-    public int getIdentificacao() {
+    public int getIdentificacao(){
 
         return identificacao;
     }
@@ -48,7 +51,12 @@ public class ItemPeca {
     /**
      * @param identificacao the identificacao to set
      */
-    public void setIdentificacao(int identificacao) {
+    public final void setIdentificacao(int identificacao) throws ValorNuloException{
+        
+        if(identificacao <= 0){
+            
+            throw new ValorNuloException("Deve ser fornecida uma identificação válida para o item de peça");
+        }
 
         this.identificacao = identificacao;
     }
@@ -58,15 +66,19 @@ public class ItemPeca {
      */
     public int getAnoFab() {
 
-        return AnoFab;
+        return anoFab;
     }
 
     /**
      * @param AnoFab the AnoFab to set
      */
-    public void setAnoFab(int AnoFab) {
+    public final void setAnoFab(int anoFab) throws ValorNuloException {
 
-        this.AnoFab = AnoFab;
+        if(anoFab <= 0){
+            
+            throw new ValorNuloException("Deve ser fornecido um ano de fabricação válido para o item de peça");
+        }
+        this.anoFab = anoFab;
     }
 
     /**
@@ -80,9 +92,24 @@ public class ItemPeca {
     /**
      * @param dataAquis the dataAquis to set
      */
-    public void setDataAquis(Date dataAquis) {
+    public final void setDataAquis(Date dataAquis) throws ValorNuloException, DataInvalidaException {
+        
+        if(dataAquis == null){
+            
+            throw new ValorNuloException("Deve ser fornecida a data de aquisição do item de peça");
+        }
+        
+        if(dataAquis.after(new Date())){
+            
+            throw new DataInvalidaException("Data informada é posterior à data atual", dataAquis);
+        }
+        
+        if((new Date().getYear() - dataAquis.getYear()) > 50){
+            
+            throw new DataInvalidaException("Data informada muito distante da data atual", dataAquis);
+        }
 
-        this.dataAquis = dataAquis;
+        this.dataAquis = dataAquis;  
     }
 
     /**
@@ -112,7 +139,7 @@ public class ItemPeca {
     /**
      * @param tempoVidaUtilRestante the tempoVidaUtilRestante to set
      */
-    public void setTempoVidaUtilRestante(int tempoVidaUtilRestante) {
+    public void setTempoVidaUtilRestante(int tempoVidaUtilRestante){
 
         this.tempoVidaUtilRestante = tempoVidaUtilRestante;
     }
@@ -159,6 +186,6 @@ public class ItemPeca {
     @Override
     public String toString(){
         
-        return "Item de Peça: " + this.identificacao + ", " + this.peca + "," + this.AnoFab + ", " + this.dataAquis + ", " + this.tempoVidaUtilRestante;
+        return "Item de Peça: " + this.identificacao + ", " + this.peca + "," + this.anoFab + ", " + this.dataAquis + ", " + this.tempoVidaUtilRestante;
     }
 }

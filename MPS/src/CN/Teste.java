@@ -6,8 +6,8 @@ package CN;
 
 import Cadastro.CadastroPecas;
 import Cadastro.CadastroSemeadoras;
-import Exceções.DeleçãoException;
-import Exceções.InserçãoException;
+import Exceções.DelecaoException;
+import Exceções.InsercaoException;
 import Repositório.AcessoPostgres;
 import Repositório.DBPeca;
 import Repositório.DBSemeadora;
@@ -96,7 +96,7 @@ public class Teste {
         try {
 
             new CadastroSemeadoras(dbSem).insertSemeadora(sem);
-        } catch (InserçãoException ie) {
+        } catch (InsercaoException ie) {
 
             ie.getRTException().printStackTrace();
         }
@@ -107,7 +107,7 @@ public class Teste {
         try {
 
             new CadastroSemeadoras(dbSem).deleteSemeadora(1);
-        } catch (DeleçãoException de) {
+        } catch (DelecaoException de) {
 
             de.getRTException().printStackTrace();
         }
@@ -122,7 +122,6 @@ public class Teste {
      AlocacaoPeca alocPeca2 = new AlocacaoPeca(itemPeca, div);
      alocPeca.setItemPeca(itemPeca2);
      }*/
-    
     public static void testeGeraCodigoPeca() {
 
         Peca p = new Peca("teste", TipoPeca.DISCO_DE_CORTE_DE_PALHADA);
@@ -155,7 +154,7 @@ public class Teste {
         try {
 
             new CadastroSemeadoras(dbSem).insertSemeadora(sem);
-        } catch (InserçãoException ie) {
+        } catch (InsercaoException ie) {
 
             ie.getRTException().printStackTrace();
         }
@@ -167,22 +166,37 @@ public class Teste {
         Semeadora sem = new CadastroSemeadoras(dbSem).selectSemeadora(1);
     }
 
+    public static void testeInsertPeca() {
+
+        Peca peca = new Peca(2, "baldan", TipoPeca.DISCO_DUPLO_DE_TOSADO);
+
+        new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).insertPeca(peca);
+    }
+
+    public static void testeDeletePeca() {
+
+        new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).deletePeca(2);
+    }
+
+    public static void testeUpdatePeca() {
+
+        Peca p = new Peca(3, "stara", TipoPeca.DISCO_DUPLO_DE_TOSADO);
+
+        new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).updatePeca(2, p);
+    }
+
+    public static void testeSelectPeca() {
+
+        new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).selectPecaByTipoPeca(TipoPeca.DISCO_DUPLO_DE_TOSADO.getCodTipoPeca());
+        System.out.println(CadastroPecas.pecas);
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
-        Peca peca = new Peca(2, "baldan", TipoPeca.DISCO_DUPLO_DE_TOSADO);
         
-        //new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).insertPeca(peca);
+        testeInsertSemeadora();
         
-        //new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).deletePeca(2);
-        
-        Peca p = new Peca(3, "stara", TipoPeca.DISCO_DUPLO_DE_TOSADO);
-        
-        //new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).updatePeca(2, p);
-        
-        new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).selectPecaByTipoPeca(TipoPeca.DISCO_DUPLO_DE_TOSADO.getCodTipoPeca());
-        System.out.println(CadastroPecas.pecas);
     }
 }

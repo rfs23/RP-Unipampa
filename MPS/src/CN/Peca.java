@@ -1,6 +1,7 @@
 package CN;
 
 import Cadastro.CadastroPecas;
+import Exceções.ValorNuloException;
 import Repositório.AcessoPostgres;
 import Repositório.DBPeca;
 import java.util.Date;
@@ -8,40 +9,35 @@ import java.util.Map;
 
 public class Peca {
 
-    private int identificacao;    
+    private int identificacao;
     private String fabricante;
     private TipoPeca tipo;
     private CalculaDesgasteAtividade calcDesgaste;
 
-    public Peca(int identificacao, String fabricante, TipoPeca tipo) {
-        
-        this.identificacao = identificacao;
-        this.fabricante = fabricante;
-        this.tipo = tipo;
+    public Peca(int identificacao, String fabricante, TipoPeca tipo) throws ValorNuloException {
+
+        setIdentificacao(identificacao);
+        setFabricante(fabricante);
+        setTipo(tipo);
     }
 
-    public Peca(String fabricante, TipoPeca tipo){
-        
+    public Peca(String fabricante, TipoPeca tipo) throws ValorNuloException  {
+
         this(new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).geraCodigoPeca(), fabricante, tipo);
     }
 
-    public void setTipo(TipoPeca tipo) {
-        
-        this.tipo = tipo;
-    }
-
     public void setCalculaDesgaste(CalculaDesgasteAtividade calcDesgaste) {
-        
+
         this.calcDesgaste = calcDesgaste;
     }
 
     public int calculaDesgaste(Map fatores, Date duracao, TipoAtividade atividade) {
-        
+
         return 0;
     }
 
     public boolean matches(int Map) {
-        
+
         return false;
     }
 
@@ -49,15 +45,20 @@ public class Peca {
      * @return the identificacao
      */
     public int getIdentificacao() {
-        
+
         return identificacao;
     }
 
     /**
      * @param identificacao the identificacao to set
      */
-    public void setIdentificacao(int identificacao) {
-        
+    public final void setIdentificacao(int identificacao) throws ValorNuloException {
+
+        if (identificacao <= 0) {
+
+            throw new ValorNuloException("Deve ser fornecido um código válido para a peça");
+        }
+
         this.identificacao = identificacao;
     }
 
@@ -65,42 +66,56 @@ public class Peca {
      * @return the fabricante
      */
     public String getFabricante() {
-        
+
         return fabricante;
     }
 
     /**
      * @param fabricante the fabricante to set
      */
-    public void setFabricante(String fabricante) {
-        
+    public final void setFabricante(String fabricante) throws ValorNuloException {
+
+        if (fabricante == null || fabricante.equals("")) {
+
+            throw new ValorNuloException("Deve ser informado o fabricante da peça");
+        }
+
         this.fabricante = fabricante;
     }
 
+    public final void setTipo(TipoPeca tipo) throws ValorNuloException {
+
+        if(tipo == null){
+            
+            throw new ValorNuloException("Deve ser fornecido um tipo para peça");
+        }
+
+        this.tipo = tipo;
+    }
 
     /**
      * @return the tipo
      */
     public TipoPeca getTipo() {
-        
+
         return tipo;
     }
-    
+
     @Override
-    public int hashCode(){
-        
+    public int hashCode() {
+
         return this.identificacao;
     }
-    
+
     @Override
-    public boolean equals(Object obj){
-        
-        return ((obj instanceof Peca) && ((Peca)obj).getIdentificacao() == this.identificacao );
+    public boolean equals(Object obj) {
+
+        return ((obj instanceof Peca) && ((Peca) obj).getIdentificacao() == this.identificacao);
     }
-    
+
     @Override
-    public String toString(){
-        
+    public String toString() {
+
         return "Peca: " + this.identificacao + ", " + this.fabricante + ", " + this.tipo;
     }
 }

@@ -1,6 +1,8 @@
 package CN;
 
-import Exceções.RelaçãoPeçaDivisãoException;
+import Exceções.DataInvalidaException;
+import Exceções.RelacaoPecaDivisaoException;
+import Exceções.ValorNuloException;
 import java.util.Date;
 import java.util.Observable;
 
@@ -11,24 +13,25 @@ public class AlocacaoPeca extends Observable {
     private ItemPeca peca;
     private Observable observable;
 
-    public AlocacaoPeca(Date dataInclusaoPeca) {
+    public AlocacaoPeca(Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException {
 
-        this.dataInclusaoItemPeca = dataInclusaoPeca;
+        setDataInclusaoItemPeca(dataInclusaoPeca);
     }
 
-    public AlocacaoPeca() {
+    public AlocacaoPeca() throws ValorNuloException, DataInvalidaException {
 
         this(new Date());
     }
 
-    public void alterarItemPeca(Divisao div, ItemPeca peca, Date dataInclusaoPeca) throws RelaçãoPeçaDivisãoException {
+    public void alterarItemPeca(Divisao div, ItemPeca peca, Date dataInclusaoPeca) throws RelacaoPecaDivisaoException, DataInvalidaException, ValorNuloException {
 
         verificaTipoAlocacao(div, peca);
 
         try {
+            
             if (div.selecionarPeca(peca.getIdentificacao()).equals(this)) {
 
-                this.dataInclusaoItemPeca = dataInclusaoPeca;
+                setDataInclusaoItemPeca(dataInclusaoPeca);
                 this.divisao = div;
                 this.peca = peca;
                 peca.setAlocPeca(this);
@@ -57,7 +60,22 @@ public class AlocacaoPeca extends Observable {
         this.peca.setTempoVidaUtilRestante(Calculo.porcVidaUtilParaVidaUtil(this.peca.getPeca(), porcVidaUtil));
     }
 
-    public void setDataInclusaoItemPeca(Date data) {
+    public final void setDataInclusaoItemPeca(Date data) throws ValorNuloException, DataInvalidaException {
+
+        if (data == null) {
+
+            throw new ValorNuloException("Deve ser fornecida a data de alocação da peça");
+        }
+
+        if (data.after(new Date())) {
+
+            throw new DataInvalidaException("Data informada é posterior à data atual", data);
+        }
+
+        if ((new Date().getYear() - data.getYear()) > 50) {
+
+            throw new DataInvalidaException("Data informada muito distante da data atual", data);
+        }
 
         this.dataInclusaoItemPeca = data;
     }
@@ -82,13 +100,13 @@ public class AlocacaoPeca extends Observable {
 
      }
      }*/
-    public static void verificaTipoAlocacao(Divisao div, ItemPeca peca) throws RelaçãoPeçaDivisãoException {
+    public static void verificaTipoAlocacao(Divisao div, ItemPeca peca) throws RelacaoPecaDivisaoException {
 
         try {
 
             if (!div.getTipoAloc().equals(peca.getPeca().getTipo().getTipoAlocacao())) {
 
-                throw new RelaçãoPeçaDivisãoException(div.getTipoAloc(), peca.getPeca().getTipo().getTipoAlocacao(), "O item de peça está sendo alocado em uma divisão a qual não é compatível com!");
+                throw new RelacaoPecaDivisaoException(div.getTipoAloc(), peca.getPeca().getTipo().getTipoAlocacao(), "O item de peça está sendo alocado em uma divisão a qual não é compatível com!");
             }
         } catch (NullPointerException npe) {
         }
@@ -98,6 +116,7 @@ public class AlocacaoPeca extends Observable {
      * @return the dataInclusaoItemPeca
      */
     public Date getDataInclusaoItemPeca() {
+
         return dataInclusaoItemPeca;
     }
 
@@ -105,6 +124,7 @@ public class AlocacaoPeca extends Observable {
      * @return the divisao
      */
     public Divisao getDivisao() {
+
         return divisao;
     }
 

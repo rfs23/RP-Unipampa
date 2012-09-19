@@ -6,10 +6,10 @@ package Repositório;
 
 import CN.Peca;
 import CN.TipoPeca;
-import Exceções.AtualizaçãoException;
+import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
-import Exceções.DeleçãoException;
-import Exceções.InserçãoException;
+import Exceções.DelecaoException;
+import Exceções.InsercaoException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class DBPeca implements RepositorioPeca {
     }
 
     @Override
-    public void insertPeca(Peca peca) throws InserçãoException {
+    public void insertPeca(Peca peca) throws InsercaoException {
 
         sql = "insert into peca values (" + peca.getIdentificacao() + ", " + peca.getTipo().getCodTipoPeca() + ", '" + peca.getFabricante() + "')";
 
@@ -71,7 +71,7 @@ public class DBPeca implements RepositorioPeca {
     }
 
     @Override
-    public void deletePeca(int codPeca) throws DeleçãoException {
+    public void deletePeca(int codPeca) throws DelecaoException {
 
         sql = "delete from peca where codpeca=" + codPeca;
 
@@ -81,12 +81,12 @@ public class DBPeca implements RepositorioPeca {
 
         } catch (SQLException sqle) {
 
-            throw new DeleçãoException("Não foi possível deletar a peça do banco de dados", sqle);
+            throw new DelecaoException("Não foi possível deletar a peça do banco de dados", sqle);
         }
     }
 
     @Override
-    public void updatePeca(int codPeca, Peca peca) throws AtualizaçãoException {
+    public void updatePeca(int codPeca, Peca peca) throws AtualizacaoException {
 
         sql = "update peca set codpeca=" + peca.getIdentificacao() + ", codtipopeca=" + peca.getTipo().getCodTipoPeca() + ", fabricante='" + peca.getFabricante() + "' where codpeca=" + codPeca;
 
@@ -96,7 +96,7 @@ public class DBPeca implements RepositorioPeca {
 
         } catch (SQLException sqle) {
 
-            throw new AtualizaçãoException("Não foi possível atualizar a peça no banco de dados", sqle);
+            throw new AtualizacaoException("Não foi possível atualizar a peça no banco de dados", sqle);
         }
     }
 

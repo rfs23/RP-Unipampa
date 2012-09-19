@@ -10,13 +10,13 @@ import CN.TipoAlocacao;
  *
  * @author rafael
  */
-public class RelaçãoPeçaDivisãoException extends RuntimeException{
+public class RelacaoPecaDivisaoException extends RuntimeException{
     
     private TipoAlocacao tipoAlocDivisao;
     private TipoAlocacao tipoAlocPeca;
     String message;
     
-    public RelaçãoPeçaDivisãoException(TipoAlocacao tipoAlocDivisao, TipoAlocacao tipoAlocPeca, String message){
+    public RelacaoPecaDivisaoException(TipoAlocacao tipoAlocDivisao, TipoAlocacao tipoAlocPeca, String message){
         
         super(message);
         this.tipoAlocDivisao = tipoAlocDivisao;
