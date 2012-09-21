@@ -14,7 +14,9 @@ import Repositório.DBItemPeca;
 import Repositório.DBPeca;
 import Repositório.DBSemeadora;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  *
@@ -219,8 +221,16 @@ public class Teste {
      */
     public static void main(String[] args) {
 
-        new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).selectItensPecaNaoAlocadosByAnoFabricacao(2010);
+        Peca p = new Peca(1, "marchesan", TipoPeca.DISCO_DE_CORTE_DE_PALHADA);
+        Semeadora sem = new Semeadora("3000", "CASE", 2010);
+        sem.addDivisao("linha 1", TipoAlocacao.Linha);
+        sem.addPeca(1, 1, 2011, new Date(), p, 150);
 
-        System.out.println(CadastroItensPeca.itensPeca);
+        Map<String, TipoFator> fatores = new HashMap<String, TipoFator>();
+        fatores.put("operador", TipoFator.OPERADOR_DESTREINADO);
+        fatores.put("solo", TipoFator.SOLO_ARGILOSO);
+        fatores.put("velocidade de trabalho", TipoFator.VELOCIDADE_DE_TRABALHO_FORA_DA_RECOMENDADA);
+
+        sem.realizarAtividade(1,null, 5, TipoAtividade.SEMEAR_ADUBAR, fatores);
     }
 }

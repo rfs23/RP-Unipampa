@@ -2,6 +2,7 @@ package CN;
 
 import Exceções.DataInvalidaException;
 import Exceções.RelacaoPecaDivisaoException;
+import Exceções.TempoVidaUtilForaDosLimitesException;
 import Exceções.ValorNuloException;
 import java.util.Date;
 import java.util.Observable;
@@ -45,19 +46,19 @@ public class AlocacaoPeca extends Observable {
         return this.peca;
     }
 
-    public void subtraiVidaUtil(int desgaste) {
+    public void subtraiVidaUtil(int desgaste) throws TempoVidaUtilForaDosLimitesException{
 
-        this.peca.setTempoVidaUtilRestante(this.getItemPeca().getTempoVidaUtilRestante() - desgaste);
+        this.peca.subtrairTempoVidautil(desgaste);
     }
 
-    public int getPorcVidaUtil() {
+    public int getTempoVidaUtil() {
 
-        return Calculo.vidaUtilParaPorcVidaUtil(this);
+        return this.peca.getTempoVidaUtilRestante();
     }
 
-    public void setPorcVidaUtil(int porcVidaUtil) {
+    public void acrescentarVidaUtil(int tempoVidaUtil) throws TempoVidaUtilForaDosLimitesException{
 
-        this.peca.setTempoVidaUtilRestante(Calculo.porcVidaUtilParaVidaUtil(this.peca.getPeca(), porcVidaUtil));
+        this.peca.acrescentarTempoVidaUtil(tempoVidaUtil);
     }
 
     public final void setDataInclusaoItemPeca(Date data) throws ValorNuloException, DataInvalidaException {

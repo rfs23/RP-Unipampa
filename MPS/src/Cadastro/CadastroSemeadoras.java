@@ -13,8 +13,8 @@ import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
 import Exceções.DelecaoException;
 import Exceções.InsercaoException;
-import Exceções.ValorNuloException;
 import Exceções.SemeadoraIncompletaException;
+import Exceções.ValorNuloException;
 import Repositório.RepositorioSemeadoras;
 import java.util.ArrayList;
 import java.util.Date;
@@ -119,6 +119,11 @@ public class CadastroSemeadoras {
     public int gerarCódigoDivisão(int codSem) throws ConsultaException {
 
         return this.repSemeadoras.getMaxCodDivisao(codSem) + 1;
+    }
+    
+    public int gerarCódigoRealizaçãoAtividade() throws ConsultaException{
+        
+        return this.repSemeadoras.getMaxCodRealizacaoAtiv() + 1;
     }
     
     public void verificaCompletudeRegistroSemeadora(Semeadora sem) throws ValorNuloException{

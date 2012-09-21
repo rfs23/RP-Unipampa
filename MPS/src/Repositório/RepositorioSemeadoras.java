@@ -4,7 +4,7 @@
  */
 package Repositório;
 
-import Exceções.AnoInvalidoException;
+import CN.Atividade;
 import CN.Semeadora;
 import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
@@ -37,7 +37,12 @@ public interface RepositorioSemeadoras {
     
     Map<Integer, Semeadora> selectSemeadorasByDataInclusao (Date dataInclusao) throws ConsultaException;
     
+    void registrarAtividade(int codSem, Atividade atividade) throws InsercaoException;
+    
     int getMaxCodSemeadora() throws ConsultaException;
     
     int getMaxCodDivisao(int codSem) throws ConsultaException;
+    
+    int getMaxCodRealizacaoAtiv() throws ConsultaException;
+    
 }

@@ -5,6 +5,7 @@
 package Repositório;
 
 import CN.AlocacaoPeca;
+import CN.Atividade;
 import CN.Divisao;
 import CN.Peca;
 import CN.Semeadora;
@@ -278,40 +279,39 @@ public class DBSemeadora implements RepositorioSemeadoras {
         return null;
     }
 
-    
     /**
      *
      * @return @throws ConsultaException
      */
     @Override
     public Map<Integer, Semeadora> listSemeadoras() throws ConsultaException {
-        
+
         sql = "select * from semeadora";
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch(SQLException sqle){
-            
-            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível consultar as semeadoras no banco de dados", sqle);
         }
-        
+
         Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
                 addDivisoes(semeadora.getIdentificacao());
                 addPecas(semeadora.getIdentificacao());
                 semeadoras.put(semeadora.getIdentificacao(), semeadora);
             }
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
         }
-        
+
         return semeadoras;
     }
 
@@ -323,33 +323,33 @@ public class DBSemeadora implements RepositorioSemeadoras {
      */
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByModelo(String modeloSemeadora) throws ConsultaException {
-        
+
         sql = "select * from semeadora where modelo='" + modeloSemeadora + "'";
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch(SQLException sqle){
-            
-            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível consultar as semeadoras no banco de dados", sqle);
         }
-        
+
         Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
                 addDivisoes(semeadora.getIdentificacao());
                 addPecas(semeadora.getIdentificacao());
                 semeadoras.put(semeadora.getIdentificacao(), semeadora);
             }
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
         }
-        
+
         return semeadoras;
     }
 
@@ -361,33 +361,33 @@ public class DBSemeadora implements RepositorioSemeadoras {
      */
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByMarca(String marcaSemeadora) throws ConsultaException {
-        
+
         sql = "select * from semeadora where marca='" + marcaSemeadora + "'";
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch(SQLException sqle){
-            
-            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível consultar as semeadoras no banco de dados", sqle);
         }
-        
+
         Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
                 addDivisoes(semeadora.getIdentificacao());
                 addPecas(semeadora.getIdentificacao());
                 semeadoras.put(semeadora.getIdentificacao(), semeadora);
             }
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
         }
-        
+
         return semeadoras;
     }
 
@@ -399,33 +399,33 @@ public class DBSemeadora implements RepositorioSemeadoras {
      */
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByAno(int ano) throws ConsultaException {
-        
+
         sql = "select * from semeadora where ano='" + ano + "'";
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch(SQLException sqle){
-            
-            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível consultar as semeadoras no banco de dados", sqle);
         }
-        
+
         Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
                 addDivisoes(semeadora.getIdentificacao());
                 addPecas(semeadora.getIdentificacao());
                 semeadoras.put(semeadora.getIdentificacao(), semeadora);
             }
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
         }
-        
+
         return semeadoras;
     }
 
@@ -435,37 +435,36 @@ public class DBSemeadora implements RepositorioSemeadoras {
      * @return
      * @throws ConsultaException
      */
-    
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByDataInclusao(Date dataInclusao) throws ConsultaException {
-        
+
         sql = "select * from semeadora where datainclusao='" + dataInclusao.getDate() + "/" + (dataInclusao.getMonth() + 1)
                 + "/" + (dataInclusao.getYear() + 1900) + "'";
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch(SQLException sqle){
-            
-            throw new ConsultaException ("Não foi possível consultar as semeadoras no banco de dados", sqle);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível consultar as semeadoras no banco de dados", sqle);
         }
-        
+
         Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
                 addDivisoes(semeadora.getIdentificacao());
                 addPecas(semeadora.getIdentificacao());
                 semeadoras.put(semeadora.getIdentificacao(), semeadora);
             }
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível acessar os dados da consulta para semeadoras", sqle);
         }
-        
+
         return semeadoras;
     }
 
@@ -519,5 +518,41 @@ public class DBSemeadora implements RepositorioSemeadoras {
         }
 
         return maxCodDivisao;
+    }
+
+    @Override
+    public int getMaxCodRealizacaoAtiv() throws ConsultaException {
+
+        sql = "select max(codrealizacaoativ) as codmax from realizacaoatividade";
+
+        try {
+
+            result = sgbd.selectData(sql);
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível obter o maior código para realização de atividade do banco de dados", sqle);
+        }
+
+        int maxCodRealizazaoAtiv = 0;
+
+        try {
+
+            if (result.next()) {
+
+                maxCodRealizazaoAtiv = result.getInt("codmax");
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new ConsultaException("Não foi possível acessar o resultado de maior código para realização de atividade", sqle);
+        }
+
+        return maxCodRealizazaoAtiv;
+    }
+
+    @Override
+    public void registrarAtividade(int codSem, Atividade atividade) throws InsercaoException {
+        
+        
     }
 }

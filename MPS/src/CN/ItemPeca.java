@@ -5,7 +5,9 @@
 package CN;
 
 import Cadastro.CadastroItensPeca;
+import Exceções.ConsultaException;
 import Exceções.DataInvalidaException;
+import Exceções.TempoVidaUtilForaDosLimitesException;
 import Exceções.ValorNuloException;
 import Repositório.AcessoPostgres;
 import Repositório.DBItemPeca;
@@ -24,26 +26,33 @@ public class ItemPeca {
     private Peca peca;
     private AlocacaoPeca alocPeca;
 
-
-    public ItemPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException {
+    public ItemPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
         this(new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).geraCodigoItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante);
     }
 
-    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException{
+    public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+
+        this.peca = peca;
 
         setIdentificacao(identificacao);
         setAnoFab(anoFab);
         setDataAquis(dataAquis);
+        this.tempoVidaUtilRestante = 0;
 
-        this.peca = peca;
-        this.tempoVidaUtilRestante = tempoVidaUtilRestante;
+        if (tempoVidaUtilRestante <= 0) {
+
+            throw new ValorNuloException("Deve ser atribuído ao item de peça um tempo de visa útil restante", this);
+        }
+
+        acrescentarTempoVidaUtil(tempoVidaUtilRestante);
+
     }
 
     /**
      * @return the identificacao
      */
-    public int getIdentificacao(){
+    public int getIdentificacao() {
 
         return identificacao;
     }
@@ -51,10 +60,10 @@ public class ItemPeca {
     /**
      * @param identificacao the identificacao to set
      */
-    public final void setIdentificacao(int identificacao) throws ValorNuloException{
-        
-        if(identificacao <= 0){
-            
+    public final void setIdentificacao(int identificacao) throws ValorNuloException {
+
+        if (identificacao <= 0) {
+
             throw new ValorNuloException("Deve ser fornecida uma identificação válida para o item de peça");
         }
 
@@ -74,8 +83,8 @@ public class ItemPeca {
      */
     public final void setAnoFab(int anoFab) throws ValorNuloException {
 
-        if(anoFab <= 0){
-            
+        if (anoFab <= 0) {
+
             throw new ValorNuloException("Deve ser fornecido um ano de fabricação válido para o item de peça");
         }
         this.anoFab = anoFab;
@@ -93,23 +102,23 @@ public class ItemPeca {
      * @param dataAquis the dataAquis to set
      */
     public final void setDataAquis(Date dataAquis) throws ValorNuloException, DataInvalidaException {
-        
-        if(dataAquis == null){
-            
+
+        if (dataAquis == null) {
+
             throw new ValorNuloException("Deve ser fornecida a data de aquisição do item de peça");
         }
-        
-        if(dataAquis.after(new Date())){
-            
+
+        if (dataAquis.after(new Date())) {
+
             throw new DataInvalidaException("Data informada é posterior à data atual", dataAquis);
         }
-        
-        if((new Date().getYear() - dataAquis.getYear()) > 50){
-            
+
+        if ((new Date().getYear() - dataAquis.getYear()) > 50) {
+
             throw new DataInvalidaException("Data informada muito distante da data atual", dataAquis);
         }
 
-        this.dataAquis = dataAquis;  
+        this.dataAquis = dataAquis;
     }
 
     /**
@@ -121,14 +130,6 @@ public class ItemPeca {
     }
 
     /**
-     * @param peca the peca to set
-     */
-    public void setPeca(Peca peca) {
-
-        this.peca = peca;
-    }
-
-    /**
      * @return the tempoVidaUtilRestante
      */
     public int getTempoVidaUtilRestante() {
@@ -136,56 +137,72 @@ public class ItemPeca {
         return tempoVidaUtilRestante;
     }
 
-    /**
-     * @param tempoVidaUtilRestante the tempoVidaUtilRestante to set
-     */
-    public void setTempoVidaUtilRestante(int tempoVidaUtilRestante){
+    public final void acrescentarTempoVidaUtil(int tempoVidaUtil) throws TempoVidaUtilForaDosLimitesException {
 
-        this.tempoVidaUtilRestante = tempoVidaUtilRestante;
+        int tempoVidaUtilRest = this.tempoVidaUtilRestante + Math.abs(tempoVidaUtil);
+        
+        if (tempoVidaUtilRest  > this.peca.getTipo().getEstVidaUtil()) {            
+
+            throw new TempoVidaUtilForaDosLimitesException(tempoVidaUtilRest , this.peca.getTipo().getEstVidaUtil(), "Não é possível atribuir a um item de peça um tempo de vida útil restante maior do que ele pode ter");
+        }
+        
+        this.tempoVidaUtilRestante += Math.abs(tempoVidaUtil);
     }
 
-    protected AlocacaoPeca getAlocPeca(){
+    public void subtrairTempoVidautil(int tempoVidaUtil) throws TempoVidaUtilForaDosLimitesException {
+
+        int tempoVidaUtilRest = this.tempoVidaUtilRestante + Math.abs(tempoVidaUtil);
         
+        if (tempoVidaUtilRest < 0) {
+
+            throw new TempoVidaUtilForaDosLimitesException(tempoVidaUtilRest, 0, "Um item de peça não pode ter tempo de vida útil menor do que 0");
+        }
+
+        this.tempoVidaUtilRestante -= Math.abs(tempoVidaUtil);
+    }
+
+    protected AlocacaoPeca getAlocPeca() {
+
         return this.alocPeca;
     }
 
     /**
      * @param alocPeca the alocPeca to set
      */
-    protected void setAlocPeca(AlocacaoPeca alocPeca) {
-        
-       /* Exception e = new Exception();  
-        StackTraceElement[] stack = e.getStackTrace();
-        String nomeCompletoClasseChamadora = stack[1].getClassName().replace(".", "/");
-        String[] nomeClasseChamadora = nomeCompletoClasseChamadora.split("/");
-        
-        if (nomeClasseChamadora[nomeClasseChamadora.length -1].equals("AlocacaoPeca")) {
+    public void setAlocPeca(AlocacaoPeca alocPeca) {
 
-            this.alocPeca = alocPeca;
-        }*/
+        /* Exception e = new Exception();  
+         StackTraceElement[] stack = e.getStackTrace();
+         String nomeCompletoClasseChamadora = stack[1].getClassName().replace(".", "/");
+         String[] nomeClasseChamadora = nomeCompletoClasseChamadora.split("/");
         
-        if(alocPeca.getItemPeca().equals(this)){
-            
+         if (nomeClasseChamadora[nomeClasseChamadora.length -1].equals("AlocacaoPeca")) {
+
+         this.alocPeca = alocPeca;
+         }*/
+
+        if (alocPeca.getItemPeca().equals(this)) {
+
             this.alocPeca = alocPeca;
         }
 
     }
-    
+
     @Override
-    public int hashCode(){
-        
+    public int hashCode() {
+
         return this.identificacao;
     }
-    
+
     @Override
-    public boolean equals(Object obj){
-        
-        return ((obj instanceof ItemPeca) && (((ItemPeca)obj).getIdentificacao() == this.identificacao));
+    public boolean equals(Object obj) {
+
+        return ((obj instanceof ItemPeca) && (((ItemPeca) obj).getIdentificacao() == this.identificacao));
     }
-    
+
     @Override
-    public String toString(){
-        
+    public String toString() {
+
         return "Item de Peça: " + this.identificacao + ", " + this.peca + "," + this.anoFab + ", " + this.dataAquis + ", " + this.tempoVidaUtilRestante;
     }
 }

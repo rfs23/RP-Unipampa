@@ -1,8 +1,10 @@
 package CN;
 
 import Cadastro.CadastroSemeadoras;
+import Exceções.CodigoInvalidoException;
 import Exceções.ConsultaException;
 import Exceções.DataInvalidaException;
+import Exceções.TempoVidaUtilForaDosLimitesException;
 import Exceções.ValorNuloException;
 import Repositório.AcessoPostgres;
 import Repositório.DBSemeadora;
@@ -44,6 +46,8 @@ public class Semeadora extends Observable {
         setDataRegistro(dataRegistro);
 
         this.divisoes = new HashMap<Integer, Divisao>();
+        this.atividades = new HashMap<Integer, Atividade>();
+        this.manutencoes = new HashMap<Integer, Manutencao>();
     }
 
     public final void setModelo(String modelo) throws ValorNuloException {
@@ -164,7 +168,7 @@ public class Semeadora extends Observable {
      }
 
      }*/
-    public Divisao addDivisao(String nome, TipoAlocacao tipoAloc) {
+    public Divisao addDivisao(String nome, TipoAlocacao tipoAloc) throws ConsultaException, ValorNuloException{
 
         Divisao div = new Divisao(nome, tipoAloc, this);
         Divisao divAnterior = this.divisoes.put(div.getIdentificao(), div);
@@ -172,7 +176,7 @@ public class Semeadora extends Observable {
         return divAnterior;
     }
 
-    public Divisao addDivisao(int codDivisao, String nome, TipoAlocacao tipoAloc) {
+    public Divisao addDivisao(int codDivisao, String nome, TipoAlocacao tipoAloc) throws ValorNuloException{
 
         Divisao div = new Divisao(codDivisao, nome, tipoAloc);
         Divisao divAnterior = this.divisoes.put(div.getIdentificao(), div);
@@ -219,7 +223,7 @@ public class Semeadora extends Observable {
         return new ArrayList<Divisao>(this.divisoes.values());
     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao) {
+    public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
         try {
 
@@ -232,7 +236,7 @@ public class Semeadora extends Observable {
 
     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
+    public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
 
         try {
 
@@ -245,7 +249,7 @@ public class Semeadora extends Observable {
         }
     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) {
+    public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
 
         try {
 
@@ -257,7 +261,7 @@ public class Semeadora extends Observable {
         }
     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
+    public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
         try {
 
@@ -269,12 +273,37 @@ public class Semeadora extends Observable {
         }
     }
 
-    public void realizarAtividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
+    
+    public Atividade realizarAtividade(int codAtividade, Date data, int tempoDuracao, TipoAtividade nome, Map<String, TipoFator> fatores) throws CodigoInvalidoException{
+        
+        if(this.atividades.containsKey(codAtividade)){
+            
+            throw new CodigoInvalidoException("A semeadora já possui uma atividade com esse código", codAtividade);
+        }
+        
+        Atividade atividade = new Atividade(codAtividade, data, tempoDuracao, nome, fatores);
+        
+        CalculaDesgasteAtividade calc = CalculaDesgasteSimpleFactory.createCalculaDesgasteAtividade(nome);
+        
+        for(Divisao div: this.divisoes.values()){
+            
+           for(AlocacaoPeca alocPeca: div.listarPecas()){
+               
+               alocPeca.getItemPeca().getPeca().setCalculaDesgaste(calc);
+               alocPeca.getItemPeca().subtrairTempoVidautil(atividade.calculaDesgastePeça(alocPeca));
+           }
+        }
+        
+        this.atividades.put(atividade.getCodigo(), atividade);
+        atividade.setSemeadora(this);
+        
+        return this.atividades.get(atividade.getCodigo());
     }
+    
 
-    public Atividade addAtividade(Atividade ativ) {
-
-        return atividades.put(ativ.getCodigo(), ativ);
+    public Atividade selecionarAtividade(int codAtividade){
+        
+        return this.atividades.get(codAtividade);
     }
 
     public List<Atividade> listarAtividades() {

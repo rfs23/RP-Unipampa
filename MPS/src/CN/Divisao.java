@@ -2,6 +2,8 @@ package CN;
 
 import Cadastro.CadastroSemeadoras;
 import Exceções.ConsultaException;
+import Exceções.DataInvalidaException;
+import Exceções.TempoVidaUtilForaDosLimitesException;
 import Exceções.ValorNuloException;
 import Repositório.AcessoPostgres;
 import Repositório.DBSemeadora;
@@ -54,7 +56,7 @@ public class Divisao {
 
 
      }*/
-    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao) {
+    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
 
         ItemPeca iPeca = new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
         AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusao);
@@ -64,7 +66,7 @@ public class Divisao {
         return alocPecaAnterior;
     }
 
-    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
+    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
         ItemPeca iPeca = new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
         AlocacaoPeca alocPeca = new AlocacaoPeca();
@@ -74,7 +76,7 @@ public class Divisao {
         return alocPecaAnterior;
     }
 
-    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) {
+    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
 
         ItemPeca iPeca = new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
         AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusaoPeca);
@@ -84,7 +86,7 @@ public class Divisao {
         return alocPecaAnterior;
     }
 
-    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) {
+    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
 
         ItemPeca iPeca = new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
         AlocacaoPeca alocPeca = new AlocacaoPeca();

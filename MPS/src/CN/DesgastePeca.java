@@ -2,14 +2,33 @@ package CN;
 
 public class DesgastePeca {
 
-	private int tempoVidaUtilRestante;
+    private int desgaste;
+    private AlocacaoPeca alocacaoPeca;
+    private Atividade atividade;
 
-	private AlocacaoPeca alocacaoPeca;
+    public DesgastePeca(AlocacaoPeca peca, int desgaste) {
+        
+        this.alocacaoPeca = peca;
+        this.desgaste = desgaste;
+    }
 
-	private Atividade atividade;
+    public int getDesgaste() {
+    
+        return desgaste;
+    }
 
-	public DesgastePeca(AlocacaoPeca peca, int vidaUtil) {
+    public AlocacaoPeca getAlocacaoPeca() {
+        return alocacaoPeca;
+    }
 
-	}
-
+    public void setAtividade(Atividade atividade) {
+        
+        if(atividade.selecionarDesgastePeca(this) != null){
+            
+            this.atividade = atividade;
+        }
+        
+    }
+    
+    
 }

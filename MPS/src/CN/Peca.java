@@ -31,9 +31,9 @@ public class Peca {
         this.calcDesgaste = calcDesgaste;
     }
 
-    public int calculaDesgaste(Map fatores, Date duracao, TipoAtividade atividade) {
+    public int calculaDesgaste(Map<String, TipoFator> fatores, int tempoDuracao, TipoAtividade atividade) {
 
-        return 0;
+       return calcDesgaste.calculaDesgaste(fatores, tempoDuracao, this.tipo);
     }
 
     public boolean matches(int Map) {

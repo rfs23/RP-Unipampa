@@ -1,29 +1,63 @@
 package CN;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
-import java.util.Collection;
 
 public class Atividade {
 
+    private int codigo;
     private TipoAtividade nome;
     private Date dataRealizacao;
-    private Date duracao;
-    private Map fatores;
-    private int codigo;
+    private int tempoDuracao;
+    private Map<String, TipoFator> fatores;
+    private ArrayList<DesgastePeca> desgastePecas;
     private Semeadora semeadora;
-    private Collection<DesgastePeca> desgastePeca;
 
-    public Atividade(Date data, Date duracao, TipoAtividade nome, Map fatores) {
+    public Atividade(Date data, int tempoDuracao, TipoAtividade nome, Map<String, TipoFator> fatores) {
+
+        this(0, data, tempoDuracao, nome, fatores);
     }
 
-    public void addDesgastePeca(DesgastePeca desgastePeca) {
+    public Atividade(int codigo, Date data, int tempoDuracao, TipoAtividade nome, Map<String, TipoFator> fatores) {
+
+        this.codigo = codigo;
+        this.nome = nome;
+        this.dataRealizacao = data;
+        this.tempoDuracao = tempoDuracao;
+        this.fatores = fatores;
+
+        this.desgastePecas = new ArrayList<DesgastePeca>();
+    }
+
+    public int calculaDesgastePeça(AlocacaoPeca alocPeca) {
+
+        DesgastePeca dgPeca = new DesgastePeca(alocPeca, alocPeca.getItemPeca().getPeca().calculaDesgaste(fatores, tempoDuracao, nome));
+        this.desgastePecas.add(dgPeca);
+
+        return dgPeca.getDesgaste();
+    }
+
+    public DesgastePeca selecionarDesgastePeca(DesgastePeca desgastePeca) {
+
+        if (desgastePecas.indexOf(desgastePeca) != -1) {
+
+            return desgastePecas.get(desgastePecas.indexOf(desgastePeca));
+        }
+
+        return null;
+    }
+
+    public ArrayList<DesgastePeca> listarDesgastePecas() {
+
+        return this.desgastePecas;
     }
 
     /**
      * @return the nome
      */
     public TipoAtividade getNome() {
+
         return nome;
     }
 
@@ -31,6 +65,7 @@ public class Atividade {
      * @param nome the nome to set
      */
     public void setNome(TipoAtividade nome) {
+
         this.nome = nome;
     }
 
@@ -38,6 +73,7 @@ public class Atividade {
      * @return the dataRealizacao
      */
     public Date getDataRealizacao() {
+
         return dataRealizacao;
     }
 
@@ -45,41 +81,60 @@ public class Atividade {
      * @param dataRealizacao the dataRealizacao to set
      */
     public void setDataRealizacao(Date dataRealizacao) {
+
         this.dataRealizacao = dataRealizacao;
     }
 
     /**
      * @return the duracao
      */
-    public Date getDuracao() {
-        return duracao;
+    public int getDuracao() {
+
+        return tempoDuracao;
     }
 
     /**
      * @param duracao the duracao to set
      */
-    public void setDuracao(Date duracao) {
-        this.duracao = duracao;
+    public void setDuracao(int tempoDuracao) {
+
+        this.tempoDuracao = tempoDuracao;
     }
 
     /**
      * @return the fatores
      */
-    public Map getFatores() {
+    public Map<String, TipoFator> getFatores() {
+
         return fatores;
     }
 
     /**
      * @param fatores the fatores to set
      */
-    public void setFatores(Map fatores) {
+    public void setFatores(Map<String, TipoFator> fatores) {
+
         this.fatores = fatores;
+    }
+
+    public TipoFator selecionarFator(String fator) {
+
+        return this.fatores.get(fator);
     }
 
     /**
      * @return the codigo
      */
     public int getCodigo() {
-        return codigo;
+
+        return this.codigo;
+    }
+
+    public void setSemeadora(Semeadora semeadora) {
+
+        if (semeadora.selecionarAtividade(this.codigo).equals(this)) {
+
+            this.semeadora = semeadora;
+        }
     }
 }
