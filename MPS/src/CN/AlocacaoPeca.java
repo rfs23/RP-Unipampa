@@ -29,7 +29,7 @@ public class AlocacaoPeca extends Observable {
         verificaTipoAlocacao(div, peca);
 
         try {
-            
+
             if (div.selecionarPeca(peca.getIdentificacao()).equals(this)) {
 
                 setDataInclusaoItemPeca(dataInclusaoPeca);
@@ -46,7 +46,7 @@ public class AlocacaoPeca extends Observable {
         return this.peca;
     }
 
-    public void subtraiVidaUtil(int desgaste) throws TempoVidaUtilForaDosLimitesException{
+    public void subtraiVidaUtil(int desgaste) throws TempoVidaUtilForaDosLimitesException {
 
         this.peca.subtrairTempoVidautil(desgaste);
     }
@@ -56,7 +56,7 @@ public class AlocacaoPeca extends Observable {
         return this.peca.getTempoVidaUtilRestante();
     }
 
-    public void acrescentarVidaUtil(int tempoVidaUtil) throws TempoVidaUtilForaDosLimitesException{
+    public void acrescentarVidaUtil(int tempoVidaUtil) throws TempoVidaUtilForaDosLimitesException {
 
         this.peca.acrescentarTempoVidaUtil(tempoVidaUtil);
     }
@@ -81,8 +81,8 @@ public class AlocacaoPeca extends Observable {
         this.dataInclusaoItemPeca = data;
     }
 
-    public void verificaVidaUtil(int vidaUtil) {
-    }
+    /* public void verificaVidaUtil(int vidaUtil) {
+     }*/
 
     /*public final void setItemPeca(ItemPeca peca) {
 

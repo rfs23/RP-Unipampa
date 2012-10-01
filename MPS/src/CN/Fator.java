@@ -1,6 +1,6 @@
 package CN;
 
-public enum TipoFator {
+public enum Fator {
 
     SOLO_ARENOSO {
         @Override
@@ -13,6 +13,12 @@ public enum TipoFator {
         public String toString() {
 
             return "Solo arenoso";
+        }
+        
+        @Override
+        public int getCodigo(){
+            
+            return 1;
         }
     },
     SOLO_ARGILOSO {
@@ -27,6 +33,12 @@ public enum TipoFator {
 
             return "Solo argiloso";
         }
+        
+        @Override
+        public int getCodigo(){
+            
+            return 2;
+        }
     },
     VELOCIDADE_DE_TRABALHO_RECOMENDADA {
         @Override
@@ -39,6 +51,12 @@ public enum TipoFator {
         public String toString() {
 
             return "Velocidade de trabalho recomendada";
+        }
+        
+        @Override
+        public int getCodigo(){
+            
+            return 3;
         }
     },
     VELOCIDADE_DE_TRABALHO_FORA_DA_RECOMENDADA {
@@ -53,6 +71,12 @@ public enum TipoFator {
 
             return "Velocidade de trabalho fora da recomendada";
         }
+        
+        @Override
+        public int getCodigo(){
+            
+            return 4;
+        }
     },
     OPERADOR_TREINADO {
         @Override
@@ -65,6 +89,12 @@ public enum TipoFator {
         public String toString() {
 
             return "Operador treinado";
+        }
+        
+        @Override
+        public int getCodigo(){
+            
+            return 5;
         }
     },
     OPERADOR_DESTREINADO {
@@ -79,9 +109,22 @@ public enum TipoFator {
 
             return "Operador destreinado";
         }
+        
+        @Override
+        public int getCodigo(){
+            
+            return 6;
+        }
     };
+    
+    
 
     public float valor() {
+
+        return 0;
+    }
+    
+    public int getCodigo(){
         
         return 0;
     }

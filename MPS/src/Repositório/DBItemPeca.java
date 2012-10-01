@@ -62,8 +62,8 @@ public class DBItemPeca implements RepositorioItemPeca {
         sql = "insert into itempeca(coditempeca, codpeca, codtipopeca, anofab, dataaquis, tempovidautilrestante) values ("
                 + itemPeca.getIdentificacao() + ", " + itemPeca.getPeca().getIdentificacao() + ", "
                 + itemPeca.getPeca().getTipo().getCodTipoPeca() + ", " + itemPeca.getAnoFab() + ", '" + itemPeca.getDataAquis().getDate()
-                + "/" + itemPeca.getDataAquis().getMonth() + "/" + (itemPeca.getDataAquis().getYear() + 1900) + "', " + itemPeca.getTempoVidaUtilRestante() + ")";
-
+                + "/" + itemPeca.getDataAquis().getMonth() + "/" + (itemPeca.getDataAquis().getYear() + 1900) + "', " + itemPeca.getTempoVidaUtilRestante() + ")";        
+        
         try {
 
             sgbd.executeSQL(sql);

@@ -25,7 +25,9 @@ import java.util.Map;
 public class Teste {
 
     private String teste;
-    static DBSemeadora dbSem = new DBSemeadora(AcessoPostgres.getInstance());
+    static CadastroSemeadoras cSem = new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance()));
+    static CadastroPecas cPecas = new CadastroPecas(new DBPeca(AcessoPostgres.getInstance()));
+    static CadastroItensPeca cItensPeca = new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance()));
 
     public Teste(String teste) {
 
@@ -99,7 +101,7 @@ public class Teste {
 
         try {
 
-            new CadastroSemeadoras(dbSem).insertSemeadora(sem);
+            cSem.insertSemeadora(sem);
         } catch (InsercaoException ie) {
 
             ie.getRTException().printStackTrace();
@@ -110,7 +112,7 @@ public class Teste {
 
         try {
 
-            new CadastroSemeadoras(dbSem).deleteSemeadora(1);
+            cSem.deleteSemeadora(1);
         } catch (DelecaoException de) {
 
             de.getRTException().printStackTrace();
@@ -141,23 +143,26 @@ public class Teste {
         ItemPeca iPeca = new ItemPeca(2011, new Date(), p, 200);
         Semeadora sem = new Semeadora("3000", "CASE", 2010);
         sem.addDivisao("linha 1", TipoAlocacao.Linha);
-        sem.addPeca(1, 1, 2011, new Date(), p, 200);
+        sem.addPeca(1, cItensPeca.selectItemPeca(1));
     }
 
     public static void testeInsertSemeadora() {
 
-        Peca p = new Peca(1, "marchesan", TipoPeca.DISCO_DE_CORTE_DE_PALHADA);
-        ItemPeca iPeca = new ItemPeca(1, 2011, new Date(), p, 200);
         Semeadora sem = new Semeadora("3000", "CASE", 2010);
-        sem.addDivisao("linha 1", TipoAlocacao.Linha);
-        sem.addPeca(1, 1, 2011, new Date(), p, 200);
+        sem.addDivisao("Semeadora", TipoAlocacao.Semeadora);
+        sem.addDivisao("Linha 1", TipoAlocacao.Linha);
 
-        System.out.println(sem.selecionarDivisao(1).selecionarPeca(1).getItemPeca().getAlocPeca());
-        //   AlocacaoPeca alocPeca = new AlocacaoPeca(iPeca, div);
+        sem.addPeca(1, cItensPeca.selectItemPeca(1), new Date());
+        sem.addPeca(2, cItensPeca.selectItemPeca(2), new Date());
+        sem.addPeca(2, cItensPeca.selectItemPeca(3), new Date());
+        sem.addPeca(2, cItensPeca.selectItemPeca(4), new Date());
+        sem.addPeca(2, cItensPeca.selectItemPeca(5), new Date());
+        sem.addPeca(2, cItensPeca.selectItemPeca(6), new Date());
+        sem.addPeca(2, cItensPeca.selectItemPeca(7), new Date());
 
         try {
 
-            new CadastroSemeadoras(dbSem).insertSemeadora(sem);
+            cSem.insertSemeadora(sem);
         } catch (InsercaoException ie) {
 
             ie.getRTException().printStackTrace();
@@ -165,9 +170,52 @@ public class Teste {
 
     }
 
+    public static void addPecas() {
+
+        Peca p = new Peca(1, "Marchesan", TipoPeca.DISCO_DOSADOR);
+        Peca p2 = new Peca(2, "Marchesan", TipoPeca.DISCO_DE_CORTE_DE_PALHADA);
+        Peca p3 = new Peca(3, "Marchesan", TipoPeca.EJETOR_DE_SEMENTES);
+        Peca p4 = new Peca(4, "Marchesan", TipoPeca.PONTEIRA);
+        Peca p5 = new Peca(5, "Marchesan", TipoPeca.ROLAMENTO);
+        Peca p6 = new Peca(6, "Marchesan", TipoPeca.DOSADOR_DE_FERTILIZANTE);
+        Peca p7 = new Peca(7, "Marchesan", TipoPeca.DISCO_DUPLO_DE_TOSADO);
+
+        Peca[] pecas = {p, p2, p3, p4, p5, p6, p7};
+
+        for (Peca peca : pecas) {
+
+            cPecas.insertPeca(peca);
+        }
+    }
+
+    public static void addItensPeca() {
+
+        ItemPeca ip = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(1), 200);
+        ItemPeca ip2 = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(2), 150);
+        ItemPeca ip3 = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(3), 250);
+        ItemPeca ip4 = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(4), 100);
+        ItemPeca ip5 = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(5), 150);
+        ItemPeca ip6 = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(6), 200);
+        ItemPeca ip7 = new ItemPeca(2009, new Date(2010 - 1900, 01, 01), cPecas.selectPeca(7), 100);
+
+        ItemPeca[] iPecas = {ip, ip2, ip3, ip4, ip5, ip6, ip7};
+
+        for (ItemPeca iPeca : iPecas) {
+
+            try{
+              
+                cItensPeca.insertItemPeca(iPeca);
+            }catch(InsercaoException ie){
+                
+                System.out.println(ie.getRTException().getMessage());
+            }
+            
+        }
+    }
+
     public static void testeSelectSemeadora() {
 
-        Semeadora sem = new CadastroSemeadoras(dbSem).selectSemeadora(1);
+        Semeadora sem = cSem.selectSemeadora(1);
     }
 
     public static void testeInsertPeca() {
@@ -215,22 +263,31 @@ public class Teste {
 
         new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).updateItemPeca(2, iPeca);
     }
+    
+    public static void testeRealizaAtividade(){
+        
+        Semeadora sem = cSem.selectSemeadora(1);
+
+        Map<String, Fator> fatores = new HashMap<String, Fator>();
+        fatores.put("operador", Fator.OPERADOR_DESTREINADO);
+        fatores.put("solo", Fator.SOLO_ARGILOSO);
+        fatores.put("velocidade de trabalho", Fator.VELOCIDADE_DE_TRABALHO_FORA_DA_RECOMENDADA);
+
+        sem.realizarAtividade(new Date(), 5, TipoAtividade.SEMEAR_ADUBAR, fatores);
+
+        try {
+
+            new DBSemeadora(AcessoPostgres.getInstance()).registrarAtividade(1, sem.selecionarAtividade(1));
+        } catch (InsercaoException ie) {
+
+            System.out.println(ie.getRTException().getMessage());
+        }
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
-        Peca p = new Peca(1, "marchesan", TipoPeca.DISCO_DE_CORTE_DE_PALHADA);
-        Semeadora sem = new Semeadora("3000", "CASE", 2010);
-        sem.addDivisao("linha 1", TipoAlocacao.Linha);
-        sem.addPeca(1, 1, 2011, new Date(), p, 150);
-
-        Map<String, TipoFator> fatores = new HashMap<String, TipoFator>();
-        fatores.put("operador", TipoFator.OPERADOR_DESTREINADO);
-        fatores.put("solo", TipoFator.SOLO_ARGILOSO);
-        fatores.put("velocidade de trabalho", TipoFator.VELOCIDADE_DE_TRABALHO_FORA_DA_RECOMENDADA);
-
-        sem.realizarAtividade(1,null, 5, TipoAtividade.SEMEAR_ADUBAR, fatores);
+        
     }
 }

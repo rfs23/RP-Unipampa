@@ -9,10 +9,17 @@ import java.util.Map;
 
 public class Peca {
 
+    private static int codPeca;
+    
     private int identificacao;
     private String fabricante;
     private TipoPeca tipo;
     private CalculaDesgasteAtividade calcDesgaste;
+    
+    static{
+        
+        codPeca = new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).geraCodigoPeca();
+    }
 
     public Peca(int identificacao, String fabricante, TipoPeca tipo) throws ValorNuloException {
 
@@ -23,7 +30,8 @@ public class Peca {
 
     public Peca(String fabricante, TipoPeca tipo) throws ValorNuloException  {
 
-        this(new CadastroPecas(new DBPeca(AcessoPostgres.getInstance())).geraCodigoPeca(), fabricante, tipo);
+        this(1, fabricante, tipo);
+        this.identificacao = nextCodePeca();
     }
 
     public void setCalculaDesgaste(CalculaDesgasteAtividade calcDesgaste) {
@@ -31,7 +39,7 @@ public class Peca {
         this.calcDesgaste = calcDesgaste;
     }
 
-    public int calculaDesgaste(Map<String, TipoFator> fatores, int tempoDuracao, TipoAtividade atividade) {
+    public int calculaDesgaste(Map<String, Fator> fatores, int tempoDuracao, TipoAtividade atividade) {
 
        return calcDesgaste.calculaDesgaste(fatores, tempoDuracao, this.tipo);
     }
@@ -99,6 +107,14 @@ public class Peca {
     public TipoPeca getTipo() {
 
         return tipo;
+    }
+    
+    private int nextCodePeca(){
+        
+        int maxCodePeca = codPeca - 1;
+        codPeca++;
+        
+        return ++maxCodePeca;
     }
 
     @Override

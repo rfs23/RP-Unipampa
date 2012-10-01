@@ -19,16 +19,24 @@ import java.util.Date;
  */
 public class ItemPeca {
 
+    private static int codItemPeca;
+    
     private int identificacao;
     private int anoFab;
     private Date dataAquis;
     private int tempoVidaUtilRestante;
     private Peca peca;
     private AlocacaoPeca alocPeca;
+    
+    static{
+        
+        codItemPeca = new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).geraCodigoItemPeca();
+    }
 
     public ItemPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        this(new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).geraCodigoItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante);
+        this(1, anoFab, dataAquis, peca, tempoVidaUtilRestante);
+        this.identificacao = nextCodeItemPeca();
     }
 
     public ItemPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
@@ -186,6 +194,14 @@ public class ItemPeca {
             this.alocPeca = alocPeca;
         }
 
+    }
+    
+    private int nextCodeItemPeca(){
+        
+        int maxCodeItemPeca = codItemPeca - 1;
+        codItemPeca++;
+        
+        return ++maxCodeItemPeca;
     }
 
     @Override

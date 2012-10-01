@@ -1,25 +1,37 @@
 package CN;
 
+import Cadastro.CadastroSemeadoras;
+import Repositório.AcessoPostgres;
+import Repositório.DBSemeadora;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
 public class Atividade {
 
+    private static int codAtiv;
+    
     private int codigo;
     private TipoAtividade nome;
     private Date dataRealizacao;
     private int tempoDuracao;
-    private Map<String, TipoFator> fatores;
+    private Map<String, Fator> fatores;
     private ArrayList<DesgastePeca> desgastePecas;
     private Semeadora semeadora;
 
-    public Atividade(Date data, int tempoDuracao, TipoAtividade nome, Map<String, TipoFator> fatores) {
+    static {
 
-        this(0, data, tempoDuracao, nome, fatores);
+        codAtiv = new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoRealizaçãoAtividade();
+        System.out.println("Teste");
     }
 
-    public Atividade(int codigo, Date data, int tempoDuracao, TipoAtividade nome, Map<String, TipoFator> fatores) {
+    public Atividade(Date data, int tempoDuracao, TipoAtividade nome, Map<String, Fator> fatores) {
+
+        this(0, data, tempoDuracao, nome, fatores);
+        this.codigo = nextCodeAtiv();
+    }
+
+    public Atividade(int codigo, Date data, int tempoDuracao, TipoAtividade nome, Map<String, Fator> fatores) {
 
         this.codigo = codigo;
         this.nome = nome;
@@ -104,7 +116,7 @@ public class Atividade {
     /**
      * @return the fatores
      */
-    public Map<String, TipoFator> getFatores() {
+    public Map<String, Fator> getFatores() {
 
         return fatores;
     }
@@ -112,12 +124,12 @@ public class Atividade {
     /**
      * @param fatores the fatores to set
      */
-    public void setFatores(Map<String, TipoFator> fatores) {
+    public void setFatores(Map<String, Fator> fatores) {
 
         this.fatores = fatores;
     }
 
-    public TipoFator selecionarFator(String fator) {
+    public Fator selecionarFator(String fator) {
 
         return this.fatores.get(fator);
     }
@@ -136,5 +148,13 @@ public class Atividade {
 
             this.semeadora = semeadora;
         }
+    }
+
+    private int nextCodeAtiv() {
+
+        int maxCodeAtiv = codAtiv - 1;
+        codAtiv++;
+        
+        return ++maxCodeAtiv;
     }
 }

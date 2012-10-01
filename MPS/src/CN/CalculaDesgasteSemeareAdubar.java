@@ -13,7 +13,7 @@ public class CalculaDesgasteSemeareAdubar implements CalculaDesgasteAtividade {
      *
      */
     @Override
-    public int calculaDesgaste(Map<String, TipoFator> fatores, int tempoDuracao, TipoPeca tipoPeca) {
+    public int calculaDesgaste(Map<String, Fator> fatores, int tempoDuracao, TipoPeca tipoPeca) {
 
         float desgaste = 0f;
         int qtdFatores = 0;

@@ -39,6 +39,8 @@ public interface RepositorioSemeadoras {
     
     void registrarAtividade(int codSem, Atividade atividade) throws InsercaoException;
     
+    void cancelarAtividade(int codSem, int codAtiv) throws AtualizacaoException;
+    
     int getMaxCodSemeadora() throws ConsultaException;
     
     int getMaxCodDivisao(int codSem) throws ConsultaException;

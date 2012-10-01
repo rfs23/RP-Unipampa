@@ -9,5 +9,5 @@ public interface CalculaDesgasteAtividade {
     /**
      *
      */
-    public abstract int calculaDesgaste(Map<String, TipoFator> fatores, int TempoDuracao, TipoPeca tipoPeca);
+    public abstract int calculaDesgaste(Map<String, Fator> fatores, int TempoDuracao, TipoPeca tipoPeca);
 }

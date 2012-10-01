@@ -66,6 +66,7 @@ public class DBPeca implements RepositorioPeca {
 
         } catch (SQLException sqle) {
 
+            System.out.println(sqle.getMessage());
             throw new ConsultaException("Não foi possível inserir a peça no banco de dados", sqle);
         }
     }
