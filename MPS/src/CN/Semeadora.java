@@ -383,8 +383,23 @@ public class Semeadora extends Observable {
 
         return new ArrayList<Atividade>(atividades.values());
     }
+    
+    public Atividade cancelarAtividade(int codAtiv){
+        
+        if(atividades.containsKey(codAtiv)){
+            
+            for(DesgastePeca dp: atividades.get(codAtiv).listarDesgastePecas()){
+                
+                dp.getAlocacaoPeca().acrescentarVidaUtil(dp.getDesgaste());
+            }
+            
+            return atividades.remove(codAtiv);
+        }
+        
+        return null;
+    }
 
-    public Atividade excluirAtividade(int codAtiv) {
+    /*public Atividade excluirAtividade(int codAtiv) {
 
         try {
 
@@ -394,7 +409,7 @@ public class Semeadora extends Observable {
             return null;
         }
 
-    }
+    }*/
 
     public Manutencao addManutencao(Manutencao manutencao) {
 

@@ -202,14 +202,14 @@ public class Teste {
 
         for (ItemPeca iPeca : iPecas) {
 
-            try{
-              
+            try {
+
                 cItensPeca.insertItemPeca(iPeca);
-            }catch(InsercaoException ie){
-                
+            } catch (InsercaoException ie) {
+
                 System.out.println(ie.getRTException().getMessage());
             }
-            
+
         }
     }
 
@@ -263,10 +263,12 @@ public class Teste {
 
         new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance())).updateItemPeca(2, iPeca);
     }
-    
-    public static void testeRealizaAtividade(){
-        
+
+    public static void testeRealizaAtividade() {
+
         Semeadora sem = cSem.selectSemeadora(1);
+        cSem.listarAtividadesRealizadas(1);
+        sem = cSem.selectSemeadora(1);
 
         Map<String, Fator> fatores = new HashMap<String, Fator>();
         fatores.put("operador", Fator.OPERADOR_DESTREINADO);
@@ -282,6 +284,15 @@ public class Teste {
 
             System.out.println(ie.getRTException().getMessage());
         }
+    }
+    
+    public static void testeCancelaAtividade(){
+        
+        cSem.selectSemeadora(1);
+        cSem.listarAtividadesRealizadas(1);
+        Semeadora sem = cSem.selectSemeadora(1);
+        
+        cSem.cancelarAtividade(1, 1, new Date());
     }
 
     /**

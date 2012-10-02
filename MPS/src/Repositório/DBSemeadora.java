@@ -8,10 +8,12 @@ import CN.AlocacaoPeca;
 import CN.Atividade;
 import CN.DesgastePeca;
 import CN.Divisao;
+import CN.Fator;
 import CN.ItemPeca;
 import CN.Peca;
 import CN.Semeadora;
 import CN.TipoAlocacao;
+import CN.TipoAtividade;
 import CN.TipoPeca;
 import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
@@ -498,11 +500,117 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
                 throw new InsercaoException("Não foi possível registrar o desgaste do item de peça " + dp.getAlocacaoPeca().getItemPeca() + " para a atividade " + ativ.getCodigo(), sqle);
             }
+            
+            sql = "update itempeca set tempovidautilrestante=" + dp.getAlocacaoPeca().getItemPeca().getTempoVidaUtilRestante() + "where coditempeca=" + dp.getAlocacaoPeca().getItemPeca().getIdentificacao();
+            
+            try {
+
+                sgbd.executeSQL(sql);
+            } catch (SQLException sqle) {
+
+                throw new InsercaoException("Não foi possível atualizar o tempo de vida util restante para o item de peça " + dp.getAlocacaoPeca().getItemPeca(), sqle);
+            }
         }
     }
 
     @Override
-    public void cancelarAtividade(int codSem, int codAtiv) throws AtualizacaoException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void cancelarAtividade(int codSem, int codAtiv, Date dataCancelamento) throws AtualizacaoException {
+        
+        sql = "select coditempeca from desgastepecaatividade where codrealizacaoativ=" + codAtiv;
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível consultar o desgaste das peças para a atividade " + codAtiv);
+        }
+        
+        int coditempeca = 0;
+        
+        try{
+            
+            while(result.next()){
+                
+                coditempeca = result.getInt("coditempeca");
+                sql = "update itempeca set tempovidautilrestante=tempovidautilrestante+(select desgaste from desgastepecaatividade where coditempeca=" + coditempeca + " and codrealizacaoativ=" + codAtiv + ") where coditempeca=" + coditempeca;
+                sgbd.executeSQL(sql);
+            }
+        }catch(SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível atualizar o tempo de vida util restante para o item de peça " + coditempeca, sqle);
+        }
+        
+        sql = "update realizacaoatividade set datacancelamento='" + dataCancelamento.getDate() + "/" + dataCancelamento.getMonth() + "/" + (dataCancelamento.getYear()+1900) + "'";
+        
+        try{
+            
+            sgbd.executeSQL(sql);
+        }catch(SQLException sqle){
+            
+            throw new AtualizacaoException("Não foi possível atualizar a data de cancelamento para a atividade " + codAtiv, sqle);
+        }
+        
+    }
+
+    @Override
+    public Semeadora carregarAtividades(Semeadora semeadora) throws ConsultaException {
+        
+        Map<String, Fator> fatores = new HashMap<String, Fator>();
+        sql = "select * from realizacaoatividade where codsem=" + semeadora.getIdentificacao() + "and datacancelamento is null";
+        
+        try{
+            
+            result = sgbd.selectData(sql);
+        }catch (SQLException sqle){
+            
+            throw new ConsultaException("Não foi possível consultar as atividades da semeadora " + semeadora, sqle);
+        }
+        
+        try{
+            
+            while(result.next()){
+                
+                fatores.put("solo", getFator(result.getInt("codsolo")));
+                fatores.put("operador", getFator(result.getInt("codoperador")));
+                fatores.put("velocidade de trabalho", getFator(result.getInt("codvelocidade")));
+                
+                semeadora.realizarAtividade((Integer) result.getObject("codrealizacaoativ"), result.getDate("datahora"), result.getInt("duracao"), getTipoAtividade(result.getInt("codativ")), fatores);
+            }
+            
+            
+        }catch(SQLException sqle){
+            
+            System.out.println(sqle.getMessage());
+            throw new AtualizacaoException("Não foi possível acessar os dados da consulta para a realização de atividades da semeadora",sqle);
+        }
+        
+        return semeadora;
+    }
+    
+    private Fator getFator(int codFator){
+        
+        for(Fator f: Fator.values()){
+            
+            if(f.getCodigo() == codFator){
+                
+                return f;
+            }
+        }
+        
+        return null;
+    }
+    
+    private TipoAtividade getTipoAtividade(int codTipoAtividade){
+        
+        for(TipoAtividade ta: TipoAtividade.values()){
+            
+            if(ta.getCodTipoAtividade() == codTipoAtividade){
+                
+                return ta;
+            }
+        }
+        
+        return null;
     }
 }

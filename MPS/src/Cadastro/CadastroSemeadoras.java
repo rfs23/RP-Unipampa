@@ -123,6 +123,27 @@ public class CadastroSemeadoras {
         this.repSemeadoras.registrarAtividade(codSem, sem.selecionarAtividade(codAtiv));
     }
 
+    public void listarAtividadesRealizadas(int codSem) throws ConsultaException {
+
+        if (semeadoras.containsKey(codSem)) {
+
+            Semeadora sem = this.repSemeadoras.carregarAtividades(semeadoras.get(codSem));
+            semeadoras.put(sem.getIdentificacao(), sem);
+        }
+    }
+    
+    public void cancelarAtividade(int codSem, int codAtividade, Date dataCancelamento){
+        
+        if(semeadoras.containsKey(codSem)){
+            
+            if(semeadoras.get(codSem).selecionarAtividade(codAtividade) != null){
+                
+                this.repSemeadoras.cancelarAtividade(codSem, codAtividade, dataCancelamento);
+                semeadoras.get(codSem).cancelarAtividade(codAtividade);
+            }
+        }
+    }
+
     public int gerarCódigoSemeadora() throws ConsultaException {
 
         return this.repSemeadoras.getMaxCodSemeadora() + 1;
