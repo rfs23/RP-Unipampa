@@ -29,6 +29,13 @@ public class Teste {
     static CadastroPecas cPecas = new CadastroPecas(new DBPeca(AcessoPostgres.getInstance()));
     static CadastroItensPeca cItensPeca = new CadastroItensPeca(new DBItemPeca(AcessoPostgres.getInstance()));
 
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        
+    }
+
     public Teste(String teste) {
 
         this.teste = teste;
@@ -285,20 +292,30 @@ public class Teste {
             System.out.println(ie.getRTException().getMessage());
         }
     }
-    
-    public static void testeCancelaAtividade(){
-        
+
+    public static void testeCancelaAtividade() {
+
         cSem.selectSemeadora(1);
         cSem.listarAtividadesRealizadas(1);
         Semeadora sem = cSem.selectSemeadora(1);
-        
+
         cSem.cancelarAtividade(1, 1, new Date());
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    public static void testeReparo() {
+
+        Semeadora sem1 = cSem.selectSemeadora(1);
+        sem1.sofrerReparo(new Date(), 2, 2, 145);
+
+        cSem.registrarReparo(sem1.getIdentificacao(), sem1.listarManutencoes().get(sem1.listarManutencoes().size() - 1).getDataRealizacao());
+    }
+    
+    public static void testeSubstituicao(){
         
+        Semeadora sem1 = cSem.selectSemeadora(1);
+        ItemPeca iPeca = cItensPeca.selectItemPeca(8);
+        sem1.sofrerSubstituicaoPeca(new Date(), sem1.selecionarDivisao(1).selecionarPeca(1), iPeca);
+        
+        cSem.registrarSubstituicao(sem1.getIdentificacao(), sem1.listarManutencoes().get(sem1.listarManutencoes().size() - 1).getDataRealizacao());
     }
 }

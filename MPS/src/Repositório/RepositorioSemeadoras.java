@@ -5,6 +5,8 @@
 package Repositório;
 
 import CN.Atividade;
+import CN.Manutencao.Reparo;
+import CN.Manutencao.SubstituicaoPeca;
 import CN.Semeadora;
 import Exceções.AtualizacaoException;
 import Exceções.ConsultaException;
@@ -42,6 +44,10 @@ public interface RepositorioSemeadoras {
     Semeadora carregarAtividades(Semeadora semeadora) throws ConsultaException;
     
     void cancelarAtividade(int codSem, int codAtiv, Date dataCancelamento) throws AtualizacaoException;
+    
+    void registrarReparo(int codSem, Reparo reparo) throws InsercaoException, AtualizacaoException;
+    
+    void registrarSubstituicao(int codSem, SubstituicaoPeca sub) throws InsercaoException, AtualizacaoException;
     
     int getMaxCodSemeadora() throws ConsultaException;
     

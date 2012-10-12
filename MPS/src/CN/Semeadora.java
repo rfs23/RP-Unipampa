@@ -1,5 +1,8 @@
 package CN;
 
+import CN.Manutencao.Manutencao;
+import CN.Manutencao.Reparo;
+import CN.Manutencao.SubstituicaoPeca;
 import Cadastro.CadastroSemeadoras;
 import Exceções.CodigoInvalidoException;
 import Exceções.ConsultaException;
@@ -19,7 +22,6 @@ import java.util.Observable;
 public class Semeadora extends Observable {
 
     private static int codSem;
-    
     private int identificacao;
     private String modelo;
     private String marca;
@@ -27,14 +29,13 @@ public class Semeadora extends Observable {
     private Date dataRegistro;
     private Map<Integer, Divisao> divisoes;
     private Map<Integer, Atividade> atividades;
-    private Map<Integer, Manutencao> manutencoes;
+    private Map<Date, Manutencao> manutencoes;
 
-    
-    static{
-        
+    static {
+
         codSem = new CadastroSemeadoras(new DBSemeadora(AcessoPostgres.getInstance())).gerarCódigoSemeadora();
     }
-    
+
     public Semeadora(String modelo, String marca, int ano) throws ConsultaException, ValorNuloException, DataInvalidaException {
 
         this(1, modelo, marca, ano, new Date());
@@ -56,7 +57,7 @@ public class Semeadora extends Observable {
 
         this.divisoes = new HashMap<Integer, Divisao>();
         this.atividades = new HashMap<Integer, Atividade>();
-        this.manutencoes = new HashMap<Integer, Manutencao>();
+        this.manutencoes = new HashMap<Date, Manutencao>();
     }
 
     public final void setModelo(String modelo) throws ValorNuloException {
@@ -248,76 +249,74 @@ public class Semeadora extends Observable {
      */
     /*public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        try {
+     try {
 
-            AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante, dataInclusao);
-            return alocPecaAnterior;
-        } catch (NullPointerException npe) {
+     AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante, dataInclusao);
+     return alocPecaAnterior;
+     } catch (NullPointerException npe) {
 
-            return null;
-        }
+     return null;
+     }
 
-    }
+     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+     public AlocacaoPeca addPeca(int codDivisao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        try {
+     try {
 
-            AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
-            return alocPecaAnterior;
+     AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     return alocPecaAnterior;
 
-        } catch (NullPointerException npe) {
+     } catch (NullPointerException npe) {
 
-            return null;
-        }
-    }
+     return null;
+     }
+     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+     public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        try {
+     try {
 
-            AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante, dataInclusaoPeca);
-            return alocPecaAnterior;
-        } catch (NullPointerException npe) {
+     AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante, dataInclusaoPeca);
+     return alocPecaAnterior;
+     } catch (NullPointerException npe) {
 
-            return null;
-        }
-    }
+     return null;
+     }
+     }
 
-    public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+     public AlocacaoPeca addPeca(int codDivisao, int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        try {
+     try {
 
-            AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
-            return alocPecaAnterior;
-        } catch (NullPointerException npe) {
+     AlocacaoPeca alocPecaAnterior = this.divisoes.get(codDivisao).addPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     return alocPecaAnterior;
+     } catch (NullPointerException npe) {
 
-            return null;
-        }
-    }*/
-
+     return null;
+     }
+     }*/
     public AlocacaoPeca addPeca(int codDivisao, ItemPeca iPeca) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        try{
-         
+        try {
+
             return this.divisoes.get(codDivisao).addPeca(iPeca);
-        }catch(NullPointerException npe){
-            
+        } catch (NullPointerException npe) {
+
             return null;
         }
     }
-    
+
     public AlocacaoPeca addPeca(int codDivisao, ItemPeca iPeca, Date dataInclusao) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        try{
-         
+        try {
+
             return this.divisoes.get(codDivisao).addPeca(iPeca, dataInclusao);
-        }catch(NullPointerException npe){
-            
+        } catch (NullPointerException npe) {
+
             return null;
         }
     }
-    
 
     public Atividade realizarAtividade(int codAtividade, Date data, int tempoDuracao, TipoAtividade nome, Map<String, Fator> fatores) throws CodigoInvalidoException {
 
@@ -349,29 +348,31 @@ public class Semeadora extends Observable {
 
 
         Atividade atividade = new Atividade(data, tempoDuracao, nome, fatores);
-        
+
         int codAtividade = atividade.getCodigo();
-        
-        if (this.atividades.containsKey(codAtividade)) {
 
-            throw new CodigoInvalidoException("A semeadora já possui uma atividade com esse código", codAtividade);
-        }
+        return realizarAtividade(codAtividade, data, tempoDuracao, nome, fatores);
 
-        CalculaDesgasteAtividade calc = CalculaDesgasteSimpleFactory.createCalculaDesgasteAtividade(nome);
+        /*if (this.atividades.containsKey(codAtividade)) {
 
-        for (Divisao div : this.divisoes.values()) {
+         throw new CodigoInvalidoException("A semeadora já possui uma atividade com esse código", codAtividade);
+         }
 
-            for (AlocacaoPeca alocPeca : div.listarPecas()) {
+         CalculaDesgasteAtividade calc = CalculaDesgasteSimpleFactory.createCalculaDesgasteAtividade(nome);
 
-                alocPeca.getItemPeca().getPeca().setCalculaDesgaste(calc);
-                alocPeca.getItemPeca().subtrairTempoVidautil(atividade.calculaDesgastePeça(alocPeca));
-            }
-        }
+         for (Divisao div : this.divisoes.values()) {
 
-        this.atividades.put(atividade.getCodigo(), atividade);
-        atividade.setSemeadora(this);
+         for (AlocacaoPeca alocPeca : div.listarPecas()) {
 
-        return this.atividades.get(atividade.getCodigo());
+         alocPeca.getItemPeca().getPeca().setCalculaDesgaste(calc);
+         alocPeca.getItemPeca().subtrairTempoVidautil(atividade.calculaDesgastePeça(alocPeca));
+         }
+         }
+
+         this.atividades.put(atividade.getCodigo(), atividade);
+         atividade.setSemeadora(this);
+
+         return this.atividades.get(atividade.getCodigo());*/
     }
 
     public Atividade selecionarAtividade(int codAtividade) {
@@ -383,47 +384,95 @@ public class Semeadora extends Observable {
 
         return new ArrayList<Atividade>(atividades.values());
     }
-    
-    public Atividade cancelarAtividade(int codAtiv){
-        
-        if(atividades.containsKey(codAtiv)){
-            
-            for(DesgastePeca dp: atividades.get(codAtiv).listarDesgastePecas()){
-                
+
+    public Atividade cancelarAtividade(int codAtiv) {
+
+        if (atividades.containsKey(codAtiv)) {
+
+            for (DesgastePeca dp : atividades.get(codAtiv).listarDesgastePecas()) {
+
                 dp.getAlocacaoPeca().acrescentarVidaUtil(dp.getDesgaste());
             }
-            
+
             return atividades.remove(codAtiv);
         }
-        
+
         return null;
     }
 
     /*public Atividade excluirAtividade(int codAtiv) {
 
-        try {
+     try {
 
-            return atividades.remove(codAtiv);
-        } catch (Exception ex) {
+     return atividades.remove(codAtiv);
+     } catch (Exception ex) {
 
-            return null;
+     return null;
+     }
+
+     }*/
+
+    /*public Manutencao addManutencao(Manutencao manutencao) {
+
+     return manutencoes.put(manutencao.getCodigo(), manutencao);
+     }*/
+    public void sofrerReparo(Date data, int codDivisao, int codItemPeca, int vidaUtil) throws CodigoInvalidoException {
+
+        if (divisoes.containsKey(codDivisao)) {
+
+            if (divisoes.get(codDivisao).selecionarPeca(codItemPeca) != null) {
+
+                Manutencao manutencao = new Reparo(data);
+                this.manutencoes.put(manutencao.getDataRealizacao(), manutencao);
+                ((Reparo) manutencao).setSemeadora(this);
+                ((Reparo) manutencao).setAlocacaoPeca(divisoes.get(codDivisao).selecionarPeca(codItemPeca));
+                ((Reparo) manutencao).setTempoVidaUtil(vidaUtil);
+
+                if (!manutencao.realizarManutencao()) {
+
+                    this.manutencoes.remove((manutencao.getDataRealizacao()));
+                }
+            } else {
+
+                throw new CodigoInvalidoException("O item de peça " + codItemPeca + " não está alocado na divisão " + codDivisao + " da semeadora " + this.identificacao, codItemPeca);
+            }
+        } else {
+
+            throw new CodigoInvalidoException("A semeadora " + this.identificacao + " não possui a divisão " + codDivisao, codDivisao);
         }
 
-    }*/
 
-    public Manutencao addManutencao(Manutencao manutencao) {
-
-        return manutencoes.put(manutencao.getCodigo(), manutencao);
-    }
-
-    public void sofrerReparo(Date data, AlocacaoPeca peca, int porcVidaUtil) {
     }
 
     public AlocacaoPeca selecionarPeca(int cod) {
         return null;
     }
 
-    public void sofrerSubstituicaoPeca(Date data, AlocacaoPeca pecaSubstituida, Peca pecaSubstituta, int porcVidaUtil) {
+    public void sofrerSubstituicaoPeca(Date data, AlocacaoPeca pecaSubstituida, ItemPeca pecaSubstituta) {
+        
+        if (divisoes.containsKey(pecaSubstituida.getDivisao().getIdentificao())) {
+
+            if (divisoes.get(pecaSubstituida.getDivisao().getIdentificao()).selecionarPeca(pecaSubstituida.getItemPeca().getIdentificacao()) != null) {
+
+                Manutencao manutencao = new SubstituicaoPeca(data);
+                this.manutencoes.put(manutencao.getDataRealizacao(), manutencao);
+                ((SubstituicaoPeca) manutencao).setSemeadora(this);
+                ((SubstituicaoPeca) manutencao).setAlocacaoPeca(pecaSubstituida);
+                //((SubstituicaoPeca) manutencao).setTempoVidaUtil(vidaUtil);
+                ((SubstituicaoPeca) manutencao).setPecaSubstituta(pecaSubstituta);
+                
+                if (!manutencao.realizarManutencao()) {
+
+                    this.manutencoes.remove((manutencao.getDataRealizacao()));
+                }
+            } else {
+
+                throw new CodigoInvalidoException("O item de peça não está alocado na semeadora " + this.identificacao, pecaSubstituida.getItemPeca().getIdentificacao());
+            }
+        } else {
+
+            throw new CodigoInvalidoException("A semeadora " + this.identificacao + " não possui a divisão " + pecaSubstituida.getDivisao(), pecaSubstituida.getDivisao().getIdentificao());
+        }
     }
 
     public List<Manutencao> listarManutencoes() {
@@ -431,17 +480,9 @@ public class Semeadora extends Observable {
         return new ArrayList<Manutencao>(manutencoes.values());
     }
 
-    public Manutencao excluirManutencao(int codManut) {
+    public Reparo selecionarReparo(Date dataReparo) {
 
-        return manutencoes.remove(codManut);
-    }
-
-    public void editarReparo(int cod, Date data, int porcVidaUtil) {
-    }
-
-    public Reparo selecionarReparo(int cod) {
-
-        return null;
+        return (manutencoes.get(dataReparo) instanceof Reparo) ? (Reparo)manutencoes.get(dataReparo) : null;
     }
 
     /**
@@ -469,14 +510,14 @@ public class Semeadora extends Observable {
         return "Semeadora: " + this.identificacao + ", " + this.marca + ", " + this.modelo + ", " + this.ano + ", " + this.dataRegistro;
     }
 
-    private int nextCodeSemeadora(){
-        
+    private int nextCodeSemeadora() {
+
         int maxCodeSem = codSem - 1;
         codSem++;
-        
+
         return ++maxCodeSem;
     }
-    
+
     public int nextCodeDivisao() {
 
         int maxCodeDiv = 0;
@@ -492,7 +533,6 @@ public class Semeadora extends Observable {
         return maxCodeDiv + 1;
     }
 
-    
     /*public void saveSemeadora() throws SQLException {
         
      new DBSemeadora(AcessoPostgres.getInstance()).insertSemeadora(this);
@@ -507,4 +547,8 @@ public class Semeadora extends Observable {
         
      new DBSemeadora(AcessoPostgres.getInstance()).deleteSemeadora(codSem);
      }*/
+    public Manutencao selecionarManutencao(Date dataRealizacao) {
+        
+        return this.manutencoes.get(dataRealizacao);
+    }
 }

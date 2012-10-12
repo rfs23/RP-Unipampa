@@ -79,7 +79,7 @@ public class AcessoPostgres implements AcessoBD{
      * Realiza conexão com um banco de dados PostGres.
      * @return true se a conexão foi realizado com sucesso, ou false caso contrário.
      */
-    public void connect() throws SQLException{
+    public Connection connect() throws SQLException{
         
         try{
             
@@ -96,6 +96,7 @@ public class AcessoPostgres implements AcessoBD{
             cnfe.printStackTrace();
         }
         
+        return con;
     }
 
     /**

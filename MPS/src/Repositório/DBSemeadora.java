@@ -10,12 +10,16 @@ import CN.DesgastePeca;
 import CN.Divisao;
 import CN.Fator;
 import CN.ItemPeca;
+import CN.Manutencao.Manutencao;
+import CN.Manutencao.Reparo;
+import CN.Manutencao.SubstituicaoPeca;
 import CN.Peca;
 import CN.Semeadora;
 import CN.TipoAlocacao;
 import CN.TipoAtividade;
 import CN.TipoPeca;
 import Exceções.AtualizacaoException;
+import Exceções.CodigoInvalidoException;
 import Exceções.ConsultaException;
 import Exceções.DelecaoException;
 import Exceções.InsercaoException;
@@ -93,7 +97,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
                         + (alocPeca.getDataInclusaoItemPeca().getYear() + 1900) + "'"
                         + ", coddivisao=" + alocPeca.getDivisao().getIdentificao() + ", "
                         + "codsem=" + alocPeca.getDivisao().getSemeadora().getIdentificacao() + " where coditempeca=" + alocPeca.getItemPeca().getIdentificacao();
-                
+
                 sgbd.executeSQL(sql);
             }
         } catch (SQLException sqle) {
@@ -249,9 +253,9 @@ public class DBSemeadora implements RepositorioSemeadoras {
                 Peca p = new Peca(result.getInt("codPeca"), result.getString("fabricante"), getTipoPeca(result.getInt("codtipopeca")));
                 ItemPeca ip = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataaquis"), p, result.getInt("tempovidautilrestante"));
                 semeadora.addPeca((Integer) result.getObject("coddivisao"), ip, result.getDate("datainclusao"));
-                
+
                 /*semeadora.addPeca((Integer) result.getObject("coddivisao"), result.getInt("coditempeca"), result.getInt("anofab"),
-                        result.getDate("dataaquis"), p, result.getInt("tempovidautilrestante"), result.getDate("datainclusao"));*/
+                 result.getDate("dataaquis"), p, result.getInt("tempovidautilrestante"), result.getDate("datainclusao"));*/
             }
         } catch (SQLException sqle) {
 
@@ -285,9 +289,9 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         return null;
     }
-    
-    private Map<Integer, Semeadora> performQuery(String sql){
-        
+
+    private Map<Integer, Semeadora> performQuery(String sql) {
+
         try {
 
             result = sgbd.selectData(sql);
@@ -500,9 +504,9 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
                 throw new InsercaoException("Não foi possível registrar o desgaste do item de peça " + dp.getAlocacaoPeca().getItemPeca() + " para a atividade " + ativ.getCodigo(), sqle);
             }
-            
+
             sql = "update itempeca set tempovidautilrestante=" + dp.getAlocacaoPeca().getItemPeca().getTempoVidaUtilRestante() + "where coditempeca=" + dp.getAlocacaoPeca().getItemPeca().getIdentificacao();
-            
+
             try {
 
                 sgbd.executeSQL(sql);
@@ -515,102 +519,223 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
     @Override
     public void cancelarAtividade(int codSem, int codAtiv, Date dataCancelamento) throws AtualizacaoException {
-        
+
         sql = "select coditempeca from desgastepecaatividade where codrealizacaoativ=" + codAtiv;
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch(SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível consultar o desgaste das peças para a atividade " + codAtiv);
         }
-        
+
         int coditempeca = 0;
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 coditempeca = result.getInt("coditempeca");
                 sql = "update itempeca set tempovidautilrestante=tempovidautilrestante+(select desgaste from desgastepecaatividade where coditempeca=" + coditempeca + " and codrealizacaoativ=" + codAtiv + ") where coditempeca=" + coditempeca;
                 sgbd.executeSQL(sql);
             }
-        }catch(SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível atualizar o tempo de vida util restante para o item de peça " + coditempeca, sqle);
         }
-        
-        sql = "update realizacaoatividade set datacancelamento='" + dataCancelamento.getDate() + "/" + dataCancelamento.getMonth() + "/" + (dataCancelamento.getYear()+1900) + "'";
-        
-        try{
-            
+
+        sql = "update realizacaoatividade set datacancelamento='" + dataCancelamento.getDate() + "/" + dataCancelamento.getMonth() + "/" + (dataCancelamento.getYear() + 1900) + "'";
+
+        try {
+
             sgbd.executeSQL(sql);
-        }catch(SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new AtualizacaoException("Não foi possível atualizar a data de cancelamento para a atividade " + codAtiv, sqle);
         }
-        
+
     }
 
     @Override
     public Semeadora carregarAtividades(Semeadora semeadora) throws ConsultaException {
-        
+
         Map<String, Fator> fatores = new HashMap<String, Fator>();
         sql = "select * from realizacaoatividade where codsem=" + semeadora.getIdentificacao() + "and datacancelamento is null";
-        
-        try{
-            
+
+        try {
+
             result = sgbd.selectData(sql);
-        }catch (SQLException sqle){
-            
+        } catch (SQLException sqle) {
+
             throw new ConsultaException("Não foi possível consultar as atividades da semeadora " + semeadora, sqle);
         }
-        
-        try{
-            
-            while(result.next()){
-                
+
+        try {
+
+            while (result.next()) {
+
                 fatores.put("solo", getFator(result.getInt("codsolo")));
                 fatores.put("operador", getFator(result.getInt("codoperador")));
                 fatores.put("velocidade de trabalho", getFator(result.getInt("codvelocidade")));
-                
-                semeadora.realizarAtividade((Integer) result.getObject("codrealizacaoativ"), result.getDate("datahora"), result.getInt("duracao"), getTipoAtividade(result.getInt("codativ")), fatores);
+
+                try {
+
+                    semeadora.realizarAtividade((Integer) result.getObject("codrealizacaoativ"), result.getDate("datahora"), result.getInt("duracao"), getTipoAtividade(result.getInt("codativ")), fatores);
+                } catch (CodigoInvalidoException cie) {
+                }
             }
-            
-            
-        }catch(SQLException sqle){
-            
+
+
+        } catch (SQLException sqle) {
+
             System.out.println(sqle.getMessage());
-            throw new AtualizacaoException("Não foi possível acessar os dados da consulta para a realização de atividades da semeadora",sqle);
+            throw new AtualizacaoException("Não foi possível acessar os dados da consulta para a realização de atividades da semeadora", sqle);
         }
-        
+
         return semeadora;
     }
-    
-    private Fator getFator(int codFator){
-        
-        for(Fator f: Fator.values()){
-            
-            if(f.getCodigo() == codFator){
-                
+
+    private Fator getFator(int codFator) {
+
+        for (Fator f : Fator.values()) {
+
+            if (f.getCodigo() == codFator) {
+
                 return f;
             }
         }
-        
+
         return null;
     }
-    
-    private TipoAtividade getTipoAtividade(int codTipoAtividade){
-        
-        for(TipoAtividade ta: TipoAtividade.values()){
-            
-            if(ta.getCodTipoAtividade() == codTipoAtividade){
-                
+
+    private TipoAtividade getTipoAtividade(int codTipoAtividade) {
+
+        for (TipoAtividade ta : TipoAtividade.values()) {
+
+            if (ta.getCodTipoAtividade() == codTipoAtividade) {
+
                 return ta;
             }
         }
-        
+
         return null;
+    }
+
+    private void insertManutencao(int codSem, Manutencao manutencao) {
+
+        sql = "insert into manutencao values ('" + manutencao.getDataRealizacao().getDate() + "/" + manutencao.getDataRealizacao().getMonth() + "/" + (manutencao.getDataRealizacao().getYear() + 1900) + " " + manutencao.getDataRealizacao().getHours() + ":" + manutencao.getDataRealizacao().getMinutes() + ":" + manutencao.getDataRealizacao().getSeconds() + "', " + codSem + ")";
+
+        System.out.println(sql);
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            System.out.println(sqle.getMessage());
+            throw new InsercaoException("Não foi possível adcionar a manutencao " + manutencao + " no banco de dados", sqle);
+        }
+
+    }
+
+    @Override
+    public void registrarReparo(int codSem, Reparo reparo) throws InsercaoException, AtualizacaoException {
+
+        insertManutencao(codSem, reparo);
+
+        sql = "insert into reparo values ('" + reparo.getDataRealizacao().getDate() + "/" + reparo.getDataRealizacao().getMonth() + "/" + (reparo.getDataRealizacao().getYear() + 1900) + " " + reparo.getDataRealizacao().getHours() + ":" + reparo.getDataRealizacao().getMinutes() + ":" + reparo.getDataRealizacao().getSeconds() + "')";
+
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            throw new InsercaoException("Não foi possível adcionar o reparo " + reparo + " no banco de dados", sqle);
+        }
+
+        sql = "insert into reparopeca values ('" + reparo.getDataRealizacao().getDate() + "/" + reparo.getDataRealizacao().getMonth() + "/" + (reparo.getDataRealizacao().getYear() + 1900) + " " + reparo.getDataRealizacao().getHours() + ":" + reparo.getDataRealizacao().getMinutes() + ":" + reparo.getDataRealizacao().getSeconds() + "', " + reparo.getPeca().getItemPeca().getIdentificacao() + ", " + reparo.getTempoVidaUtil() + ", " + reparo.getRestauro() + ")";
+
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            throw new InsercaoException("Não foi possível adcionar o reparo a peca " + reparo.getPeca().getItemPeca() + " no banco de dados", sqle);
+        }
+
+        atualizaVidaUtilPeca(reparo);
+    }
+
+    private void atualizaVidaUtilPeca(Manutencao manut) throws AtualizacaoException {
+
+        sql = "update itempeca set tempovidautilrestante=" + manut.getTempoVidaUtil() + " where coditempeca=" + manut.getPeca().getItemPeca().getIdentificacao();
+
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            throw new AtualizacaoException("Não foi possível atualizar o tempo de vida util da peca " + manut.getPeca().getItemPeca(), sqle);
+        }
+    }
+
+    @Override
+    public void registrarSubstituicao(int codSem, SubstituicaoPeca sub) throws InsercaoException, AtualizacaoException {
+
+        insertManutencao(codSem, sub);
+
+        sql = "insert into substituicao values ('" + sub.getDataRealizacao().getDate() + "/" + sub.getDataRealizacao().getMonth() + "/" + (sub.getDataRealizacao().getYear() + 1900) + " " + sub.getDataRealizacao().getHours() + ":" + sub.getDataRealizacao().getMinutes() + ":" + sub.getDataRealizacao().getSeconds() + "')";
+
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            System.out.println(sqle.getMessage());
+            throw new InsercaoException("Não foi possível adcionar a substituição " + sub + " no banco de dados", sqle);
+        }
+
+        sql = "insert into substituicaopeca values ('" + sub.getDataRealizacao().getDate() + "/" + sub.getDataRealizacao().getMonth() + "/"
+                + (sub.getDataRealizacao().getYear() + 1900) + " " + sub.getDataRealizacao().getHours() + ":" + sub.getDataRealizacao().getMinutes()
+                + ":" + sub.getDataRealizacao().getSeconds() + "', "  + sub.getPeca().getItemPeca().getIdentificacao() + ", " 
+                + sub.getPecaSubstituta().getIdentificacao() + ", " + sub.getTempoVidaUtil() + ", " + sub.getRestauro() + ")";
+
+        System.out.println(sql);
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+            System.out.println(sqle);
+
+            throw new InsercaoException("Não foi possível adcionar o a substituição da peça " + sub.getPeca().getItemPeca().getIdentificacao()
+                    + "pela peça " + sub.getPecaSubstituta().getIdentificacao() + " no banco de dados", sqle);
+        }
+
+        trocaPecas(sub);
+    }
+
+    private void trocaPecas(SubstituicaoPeca sub) throws AtualizacaoException {
+
+        sql = "update itempeca set datainclusao=null, codsem=null, coddivisao=null where coditempeca=" + sub.getPeca().getItemPeca().getIdentificacao();
+
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            throw new AtualizacaoException("Não foi possível desalocar a peça " + sub.getPeca().getItemPeca().getIdentificacao(), sqle);
+        }
+
+        sql = "update itempeca set datainclusao='" + sub.getDataRealizacao().getDate() + "/" + sub.getDataRealizacao().getMonth() + "/"
+                + (sub.getDataRealizacao().getYear() + 1900) + "' , codsem=" + sub.getSemeadora().getIdentificacao() + ", coddivisao="
+                + sub.getPeca().getDivisao().getIdentificao() + "where coditempeca=" + sub.getPecaSubstituta().getIdentificacao();
+
+        try {
+
+            sgbd.executeSQL(sql);
+        } catch (SQLException sqle) {
+
+            throw new AtualizacaoException("Não foi possível alocar a peça " + sub.getPecaSubstituta().getIdentificacao(), sqle);
+        }
     }
 }

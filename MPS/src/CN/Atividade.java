@@ -74,27 +74,11 @@ public class Atividade {
     }
 
     /**
-     * @param nome the nome to set
-     */
-    public void setNome(TipoAtividade nome) {
-
-        this.nome = nome;
-    }
-
-    /**
      * @return the dataRealizacao
      */
     public Date getDataRealizacao() {
 
         return dataRealizacao;
-    }
-
-    /**
-     * @param dataRealizacao the dataRealizacao to set
-     */
-    public void setDataRealizacao(Date dataRealizacao) {
-
-        this.dataRealizacao = dataRealizacao;
     }
 
     /**
@@ -106,14 +90,6 @@ public class Atividade {
     }
 
     /**
-     * @param duracao the duracao to set
-     */
-    public void setDuracao(int tempoDuracao) {
-
-        this.tempoDuracao = tempoDuracao;
-    }
-
-    /**
      * @return the fatores
      */
     public Map<String, Fator> getFatores() {
@@ -121,13 +97,6 @@ public class Atividade {
         return fatores;
     }
 
-    /**
-     * @param fatores the fatores to set
-     */
-    public void setFatores(Map<String, Fator> fatores) {
-
-        this.fatores = fatores;
-    }
 
     public Fator selecionarFator(String fator) {
 

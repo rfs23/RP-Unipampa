@@ -24,7 +24,7 @@ public class AlocacaoPeca extends Observable {
         this(new Date());
     }
 
-    public void alterarItemPeca(Divisao div, ItemPeca peca, Date dataInclusaoPeca) throws RelacaoPecaDivisaoException, DataInvalidaException, ValorNuloException {
+    public AlocacaoPeca alterarItemPeca(Divisao div, ItemPeca peca, Date dataInclusaoPeca) throws RelacaoPecaDivisaoException, DataInvalidaException, ValorNuloException {
 
         verificaTipoAlocacao(div, peca);
 
@@ -39,6 +39,8 @@ public class AlocacaoPeca extends Observable {
             }
         } catch (NullPointerException npe) {
         }
+        
+        return this;
     }
 
     public ItemPeca getItemPeca() {

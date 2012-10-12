@@ -6,6 +6,8 @@ package Cadastro;
 
 import CN.AlocacaoPeca;
 import CN.Divisao;
+import CN.Manutencao.Reparo;
+import CN.Manutencao.SubstituicaoPeca;
 import CN.Semeadora;
 import CN.TipoPeca;
 import Exceções.AnoInvalidoException;
@@ -141,6 +143,36 @@ public class CadastroSemeadoras {
                 this.repSemeadoras.cancelarAtividade(codSem, codAtividade, dataCancelamento);
                 semeadoras.get(codSem).cancelarAtividade(codAtividade);
             }
+        }
+    }
+    
+    public void registrarReparo(int codSem, Date dataReparo) throws NullPointerException, InsercaoException, AtualizacaoException{
+        
+        if(semeadoras.containsKey(codSem)){
+            
+            Semeadora sem = semeadoras.get(codSem);
+            
+            if(sem.selecionarManutencao(dataReparo) == null || !(sem.selecionarManutencao(dataReparo) instanceof Reparo)){
+                
+                throw new NullPointerException("A semeadora não realizou reparo para a data informada");
+            }
+            
+            this.repSemeadoras.registrarReparo(codSem, (Reparo)sem.selecionarManutencao(dataReparo));
+        }
+    }
+    
+    public void registrarSubstituicao(int codSem, Date dataSubstituicao) throws NullPointerException, InsercaoException, AtualizacaoException{
+        
+        if(semeadoras.containsKey(codSem)){
+            
+            Semeadora sem = semeadoras.get(codSem);
+            
+            if(sem.selecionarManutencao(dataSubstituicao) == null || !(sem.selecionarManutencao(dataSubstituicao) instanceof SubstituicaoPeca)){
+                
+                throw new NullPointerException("A semeadora substituição de peça para a data informada");
+            }
+            
+            this.repSemeadoras.registrarSubstituicao(codSem, (SubstituicaoPeca)sem.selecionarManutencao(dataSubstituicao));
         }
     }
 

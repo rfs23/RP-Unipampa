@@ -57,68 +57,67 @@ public class Divisao {
      }*/
     /*public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusao) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        return this.addPeca(nextCodeItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante, dataInclusao);
+     return this.addPeca(nextCodeItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante, dataInclusao);
 
-        ItemPeca iPeca = new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
-         AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusao);
-         AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
-         alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+     ItemPeca iPeca = new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusao);
+     AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+     alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
 
-         return alocPecaAnterior;
-    }
+     return alocPecaAnterior;
+     }
 
-    public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+     public AlocacaoPeca addPeca(int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        return this.addPeca(nextCodeItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     return this.addPeca(nextCodeItemPeca(), anoFab, dataAquis, peca, tempoVidaUtilRestante);
 
-        ItemPeca iPeca = new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
-         AlocacaoPeca alocPeca = new AlocacaoPeca();
-         AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
-         alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+     ItemPeca iPeca = new ItemPeca(anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     AlocacaoPeca alocPeca = new AlocacaoPeca();
+     AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+     alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
 
-         return alocPecaAnterior;
-    }
+     return alocPecaAnterior;
+     }
 
-    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+     public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante, Date dataInclusaoPeca) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        ItemPeca iPeca = new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
-        AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusaoPeca);
-        AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
-        alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+     ItemPeca iPeca = new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusaoPeca);
+     AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+     alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
 
-        return alocPecaAnterior;
-    }
+     return alocPecaAnterior;
+     }
 
-    public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+     public AlocacaoPeca addPeca(int identificacao, int anoFab, Date dataAquis, Peca peca, int tempoVidaUtilRestante) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
 
-        ItemPeca iPeca = new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
-        AlocacaoPeca alocPeca = new AlocacaoPeca();
-        AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
-        alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
+     ItemPeca iPeca = new ItemPeca(identificacao, anoFab, dataAquis, peca, tempoVidaUtilRestante);
+     AlocacaoPeca alocPeca = new AlocacaoPeca();
+     AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
+     alocPeca.alterarItemPeca(this, iPeca, alocPeca.getDataInclusaoItemPeca());
 
-        return alocPecaAnterior;
-    }*/
-    
-    public AlocacaoPeca addPeca(ItemPeca iPeca) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
-        
+     return alocPecaAnterior;
+     }*/
+    public AlocacaoPeca addPeca(ItemPeca iPeca) throws ConsultaException, ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+
         AlocacaoPeca alocPeca = new AlocacaoPeca();
         AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
         alocPeca.alterarItemPeca(this, iPeca, new Date());
-        
+
         return alocPecaAnterior;
     }
-    
-    public AlocacaoPeca addPeca(ItemPeca iPeca, Date dataInclusao) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException{
-        
+
+    public AlocacaoPeca addPeca(ItemPeca iPeca, Date dataInclusao) throws ValorNuloException, DataInvalidaException, TempoVidaUtilForaDosLimitesException {
+
         AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusao);
         AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
         alocPeca.alterarItemPeca(this, iPeca, new Date());
-        
+
         return alocPecaAnterior;
     }
-    
-    public void trocarPeca(int codItemPeca, ItemPeca iPeca){
-        
+
+    public void trocarPeca(int codItemPeca, ItemPeca iPeca) {
+
         this.alocacoesPeca.get(codItemPeca).alterarItemPeca(this, iPeca, new Date());
     }
 
@@ -139,7 +138,6 @@ public class Divisao {
      return null;
      }
      }*/
-    
     public List<AlocacaoPeca> listarPecas() {
 
         return new ArrayList<AlocacaoPeca>(alocacoesPeca.values());
@@ -286,13 +284,14 @@ public class Divisao {
 
     @Override
     public boolean equals(Object obj) {
-        
+
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
+
         final Divisao other = (Divisao) obj;
         if (this.identificacao != other.identificacao) {
             return false;
