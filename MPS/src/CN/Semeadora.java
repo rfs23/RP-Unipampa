@@ -4,6 +4,7 @@ import CN.Manutencao.Manutencao;
 import CN.Manutencao.Reparo;
 import CN.Manutencao.SubstituicaoPeca;
 import Cadastro.CadastroSemeadoras;
+import Exceções.AnoInvalidoException;
 import Exceções.CodigoInvalidoException;
 import Exceções.ConsultaException;
 import Exceções.DataInvalidaException;
@@ -80,12 +81,22 @@ public class Semeadora extends Observable {
         this.marca = marca;
     }
 
-    public final void setAno(int ano) throws ValorNuloException {
+    public final void setAno(int ano) throws ValorNuloException, AnoInvalidoException {
 
         if (ano <= 0) {
 
             throw new ValorNuloException("Deve ser informado o ano de fabrincação da semeadora");
         }
+        
+        if (ano < ((new Date().getYear() + 1900) - 40)){
+         
+            throw new AnoInvalidoException("O sistema não aceita semeadora com mais de 40 anos", ano);
+        }else if (ano > (new Date().getYear()+1900)){
+            
+            throw new AnoInvalidoException("Ano superior ao atual", ano);
+        }
+        
+        
         this.ano = ano;
     }
 
@@ -188,7 +199,7 @@ public class Semeadora extends Observable {
 
     public Divisao addDivisao(int codDivisao, String nome, TipoAlocacao tipoAloc) throws ValorNuloException {
 
-        Divisao div = new Divisao(codDivisao, nome, tipoAloc);
+        Divisao div = new Divisao(codDivisao, nome, tipoAloc);              
         Divisao divAnterior = this.divisoes.put(div.getIdentificao(), div);
         div.setSemeadora(this);
         return divAnterior;
@@ -445,6 +456,15 @@ public class Semeadora extends Observable {
     }
 
     public AlocacaoPeca selecionarPeca(int cod) {
+        
+        for(Divisao div: divisoes.values()){
+            
+            if(div.selecionarPeca(cod) != null){
+                
+                return div.selecionarPeca(cod);
+            }
+        }
+        
         return null;
     }
 

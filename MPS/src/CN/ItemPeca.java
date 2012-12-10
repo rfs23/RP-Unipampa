@@ -5,6 +5,7 @@
 package CN;
 
 import Cadastro.CadastroItensPeca;
+import Exceções.AnoInvalidoException;
 import Exceções.ConsultaException;
 import Exceções.DataInvalidaException;
 import Exceções.TempoVidaUtilForaDosLimitesException;
@@ -89,12 +90,21 @@ public class ItemPeca {
     /**
      * @param AnoFab the AnoFab to set
      */
-    public final void setAnoFab(int anoFab) throws ValorNuloException {
+    public final void setAnoFab(int anoFab) throws ValorNuloException, AnoInvalidoException {
 
         if (anoFab <= 0) {
 
             throw new ValorNuloException("Deve ser fornecido um ano de fabricação válido para o item de peça");
         }
+        
+         if (anoFab < (new Date().getYear() + 1900 - 40)){
+            
+            throw new AnoInvalidoException("O sistema não aceita peças com mais de 40 anos", anoFab);
+        }else if (anoFab > (new Date().getYear()+1900)){
+            
+            throw new AnoInvalidoException("Ano superior ao atual", anoFab);
+        }
+         
         this.anoFab = anoFab;
     }
 

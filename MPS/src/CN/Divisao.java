@@ -111,7 +111,7 @@ public class Divisao {
 
         AlocacaoPeca alocPeca = new AlocacaoPeca(dataInclusao);
         AlocacaoPeca alocPecaAnterior = this.alocacoesPeca.put(iPeca.getIdentificacao(), alocPeca);
-        alocPeca.alterarItemPeca(this, iPeca, new Date());
+        AlocacaoPeca aloc = alocPeca.alterarItemPeca(this, iPeca, new Date());
 
         return alocPecaAnterior;
     }

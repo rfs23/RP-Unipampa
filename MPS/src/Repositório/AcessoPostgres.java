@@ -134,6 +134,9 @@ public class AcessoPostgres implements AcessoBD{
             
             sqle.setNextException(new SQLException("SQL Inválida"));
             throw sqle;
+        }finally{
+            
+            disconnect();
         }
     }
 

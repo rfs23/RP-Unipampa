@@ -23,6 +23,7 @@ import Exceções.CodigoInvalidoException;
 import Exceções.ConsultaException;
 import Exceções.DelecaoException;
 import Exceções.InsercaoException;
+import Utilitários.DateConversion;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -57,8 +58,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         sql = "insert into semeadora values ( "
                 + semeadora.getIdentificacao() + ", '" + semeadora.getModelo() + "', '" + semeadora.getMarca() + "', " + semeadora.getAno()
-                + ", '" + semeadora.getDataRegistro().getDate() + "/" + semeadora.getDataRegistro().getMonth()
-                + "/" + (semeadora.getDataRegistro().getYear() + 1900) + "')";
+                + ", '" + DateConversion.dateToString(semeadora.getDataRegistro()) + "')";
 
         try {
 
@@ -93,8 +93,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
             for (AlocacaoPeca alocPeca : alocacoes) {
 
-                sql = "update itempeca set datainclusao='" + alocPeca.getDataInclusaoItemPeca().getDate() + "/" + (alocPeca.getDataInclusaoItemPeca().getMonth() + 1) + "/"
-                        + (alocPeca.getDataInclusaoItemPeca().getYear() + 1900) + "'"
+                sql = "update itempeca set datainclusao='" + DateConversion.dateToString(alocPeca.getDataInclusaoItemPeca()) + "'"
                         + ", coddivisao=" + alocPeca.getDivisao().getIdentificao() + ", "
                         + "codsem=" + alocPeca.getDivisao().getSemeadora().getIdentificacao() + " where coditempeca=" + alocPeca.getItemPeca().getIdentificacao();
 
@@ -134,6 +133,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
             this.sgbd.executeSQL(sql);
         } catch (SQLException sqle) {
 
+            sqle.getErrorCode();
             throw new DelecaoException("Não foi possível deletar a semeadora do banco de dados", sqle);
         }
     }
@@ -147,8 +147,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
     @Override
     public void updateSemeadora(int codSem, Semeadora semeadora) throws AtualizacaoException {
 
-        sql = "update semeadora set modelo='" + semeadora.getModelo() + "', marca='" + semeadora.getMarca() + "', ano='" + semeadora.getAno() + "', datainclusao='" + semeadora.getDataRegistro().getDate() + "/" + (semeadora.getDataRegistro().getMonth() + 1)
-                + "/" + (semeadora.getDataRegistro().getYear() + 1900) + "'";
+        sql = "update semeadora set modelo='" + semeadora.getModelo() + "', marca='" + semeadora.getMarca() + "', ano='" + semeadora.getAno() + "', datainclusao='" + DateConversion.dateToString(semeadora.getDataRegistro()) + "'";
 
         try {
 
@@ -184,7 +183,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
             if (result.next()) {
 
-                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"),  DateConversion.dataBancoToDate(result.getString("dataInclusao"))/*result.getDate("datainclusao")*/);
             }
 
         } catch (SQLException ex) {
@@ -214,9 +213,11 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         sql = "select * from divisao where codsem=" + codsem;
 
+        
+        ResultSet resultDivs;
         try {
 
-            result = sgbd.selectData(sql);
+            resultDivs = sgbd.selectData(sql);
         } catch (SQLException ex) {
 
             throw new ConsultaException("Não foi possível consultar as divisões da semeadora", ex);
@@ -224,13 +225,13 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         try {
 
-            while (result.next()) {
+            while (resultDivs.next()) {
 
-                semeadora.addDivisao((Integer) result.getObject("coddivisao"), result.getString("nome"), getTipoAlocacao(result.getInt("codtipoalocacao")));
+                semeadora.addDivisao((Integer) resultDivs.getObject("coddivisao"), resultDivs.getString("nome"), getTipoAlocacao(resultDivs.getInt("codtipoalocacao")));
             }
         } catch (SQLException ex) {
 
-            throw new ConsultaException("A divisão que estás tentando acessar não consta na consulta", ex);
+            throw new ConsultaException("A divisão que estás tentando acessar não consta na consulta" + ex.getMessage(), ex);
         }
     }
 
@@ -238,21 +239,23 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         sql = "select * from divisao inner join itempeca using(codsem, coddivisao) inner join peca using (codpeca, codtipopeca) where codsem=" + codsem;
 
+        ResultSet resultPecas;
         try {
 
-            result = sgbd.selectData(sql);
+            resultPecas = sgbd.selectData(sql);
         } catch (SQLException sqle) {
 
+            System.out.println(sqle.getMessage());
             throw new ConsultaException("Não foi possível consultar as peças alocadas à semeadora", sqle);
         }
 
         try {
 
-            while (result.next()) {
+            while (resultPecas.next()) {
 
-                Peca p = new Peca(result.getInt("codPeca"), result.getString("fabricante"), getTipoPeca(result.getInt("codtipopeca")));
-                ItemPeca ip = new ItemPeca(result.getInt("coditempeca"), result.getInt("anofab"), result.getDate("dataaquis"), p, result.getInt("tempovidautilrestante"));
-                semeadora.addPeca((Integer) result.getObject("coddivisao"), ip, result.getDate("datainclusao"));
+                Peca p = new Peca(resultPecas.getInt("codPeca"), resultPecas.getString("fabricante"), getTipoPeca(resultPecas.getInt("codtipopeca")));
+                ItemPeca ip = new ItemPeca(resultPecas.getInt("coditempeca"), resultPecas.getInt("anofab"), DateConversion.dataBancoToDate(resultPecas.getString("dataaquis")), p, resultPecas.getInt("tempovidautilrestante"));
+                semeadora.addPeca((Integer) resultPecas.getObject("coddivisao"), ip, DateConversion.dataBancoToDate(resultPecas.getString("datainclusao")));
 
                 /*semeadora.addPeca((Integer) result.getObject("coddivisao"), result.getInt("coditempeca"), result.getInt("anofab"),
                  result.getDate("dataaquis"), p, result.getInt("tempovidautilrestante"), result.getDate("datainclusao"));*/
@@ -292,6 +295,9 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
     private Map<Integer, Semeadora> performQuery(String sql) {
 
+        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
+        this.sql = sql;
+        
         try {
 
             result = sgbd.selectData(sql);
@@ -300,13 +306,11 @@ public class DBSemeadora implements RepositorioSemeadoras {
             throw new ConsultaException("Não foi possível consultar as semeadoras no banco de dados", sqle);
         }
 
-        Map<Integer, Semeadora> semeadoras = new HashMap<Integer, Semeadora>();
-
         try {
-
+            
             while (result.next()) {
 
-                semeadora = new Semeadora((Integer) result.getObject("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), result.getDate("datainclusao"));
+                semeadora = new Semeadora(result.getInt("codsem"), result.getString("modelo"), result.getString("marca"), result.getInt("ano"), DateConversion.dataBancoToDate(result.getString("datainclusao")));
                 addDivisoes(semeadora.getIdentificacao());
                 addPecas(semeadora.getIdentificacao());
                 semeadoras.put(semeadora.getIdentificacao(), semeadora);
@@ -340,7 +344,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByModelo(String modeloSemeadora) throws ConsultaException {
 
-        sql = "select * from semeadora where modelo='" + modeloSemeadora + "'";
+        sql = "select * from semeadora where modelo like '%" + modeloSemeadora + "%'";
 
         return performQuery(sql);
     }
@@ -354,7 +358,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByMarca(String marcaSemeadora) throws ConsultaException {
 
-        sql = "select * from semeadora where marca='" + marcaSemeadora + "'";
+        sql = "select * from semeadora where marca like'%" + marcaSemeadora + "%'";
 
         return performQuery(sql);
     }
@@ -382,8 +386,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
     @Override
     public Map<Integer, Semeadora> selectSemeadorasByDataInclusao(Date dataInclusao) throws ConsultaException {
 
-        sql = "select * from semeadora where datainclusao='" + dataInclusao.getDate() + "/" + (dataInclusao.getMonth() + 1)
-                + "/" + (dataInclusao.getYear() + 1900) + "'";
+        sql = "select * from semeadora where datainclusao='" + DateConversion.dateToString(dataInclusao) + "'";
 
         return performQuery(sql);
     }
@@ -474,8 +477,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
     public void registrarAtividade(int codSem, Atividade atividade) throws InsercaoException {
 
         sql = "insert into realizacaoatividade values (" + atividade.getCodigo() + ", " + atividade.getNome().getCodTipoAtividade() + ", " + codSem + ", '"
-                + atividade.getDataRealizacao().getDate() + "/" + atividade.getDataRealizacao().getMonth() + "/"
-                + (atividade.getDataRealizacao().getYear() + 1900) + " " + atividade.getDataRealizacao().getHours() + ":"
+                + DateConversion.dateToString(atividade.getDataRealizacao()) + " " + atividade.getDataRealizacao().getHours() + ":"
                 + atividade.getDataRealizacao().getMinutes() + ":" + atividade.getDataRealizacao().getSeconds() + "', "
                 + atividade.getDuracao() + ", " + atividade.getFatores().get("solo").getCodigo() + ", "
                 + atividade.getFatores().get("operador").getCodigo() + ", " + atividade.getFatores().get("velocidade de trabalho").getCodigo() + ")";
@@ -545,7 +547,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
             throw new ConsultaException("Não foi possível atualizar o tempo de vida util restante para o item de peça " + coditempeca, sqle);
         }
 
-        sql = "update realizacaoatividade set datacancelamento='" + dataCancelamento.getDate() + "/" + dataCancelamento.getMonth() + "/" + (dataCancelamento.getYear() + 1900) + "'";
+        sql = "update realizacaoatividade set datacancelamento='" + DateConversion.dateToString(dataCancelamento) + "'";
 
         try {
 
@@ -581,7 +583,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
                 try {
 
-                    semeadora.realizarAtividade((Integer) result.getObject("codrealizacaoativ"), result.getDate("datahora"), result.getInt("duracao"), getTipoAtividade(result.getInt("codativ")), fatores);
+                    semeadora.realizarAtividade((Integer) result.getObject("codrealizacaoativ"), DateConversion.dataBancoToDate(result.getString("datahora")), result.getInt("duracao"), getTipoAtividade(result.getInt("codativ")), fatores);
                 } catch (CodigoInvalidoException cie) {
                 }
             }
@@ -624,7 +626,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
     private void insertManutencao(int codSem, Manutencao manutencao) {
 
-        sql = "insert into manutencao values ('" + manutencao.getDataRealizacao().getDate() + "/" + manutencao.getDataRealizacao().getMonth() + "/" + (manutencao.getDataRealizacao().getYear() + 1900) + " " + manutencao.getDataRealizacao().getHours() + ":" + manutencao.getDataRealizacao().getMinutes() + ":" + manutencao.getDataRealizacao().getSeconds() + "', " + codSem + ")";
+        sql = "insert into manutencao values ('" + DateConversion.dateToString(manutencao.getDataRealizacao()) + " " + manutencao.getDataRealizacao().getHours() + ":" + manutencao.getDataRealizacao().getMinutes() + ":" + manutencao.getDataRealizacao().getSeconds() + "', " + codSem + ")";
 
         System.out.println(sql);
         try {
@@ -643,7 +645,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         insertManutencao(codSem, reparo);
 
-        sql = "insert into reparo values ('" + reparo.getDataRealizacao().getDate() + "/" + reparo.getDataRealizacao().getMonth() + "/" + (reparo.getDataRealizacao().getYear() + 1900) + " " + reparo.getDataRealizacao().getHours() + ":" + reparo.getDataRealizacao().getMinutes() + ":" + reparo.getDataRealizacao().getSeconds() + "')";
+        sql = "insert into reparo values ('" + DateConversion.dateToString(reparo.getDataRealizacao()) + " " + reparo.getDataRealizacao().getHours() + ":" + reparo.getDataRealizacao().getMinutes() + ":" + reparo.getDataRealizacao().getSeconds() + "')";
 
         try {
 
@@ -653,7 +655,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
             throw new InsercaoException("Não foi possível adcionar o reparo " + reparo + " no banco de dados", sqle);
         }
 
-        sql = "insert into reparopeca values ('" + reparo.getDataRealizacao().getDate() + "/" + reparo.getDataRealizacao().getMonth() + "/" + (reparo.getDataRealizacao().getYear() + 1900) + " " + reparo.getDataRealizacao().getHours() + ":" + reparo.getDataRealizacao().getMinutes() + ":" + reparo.getDataRealizacao().getSeconds() + "', " + reparo.getPeca().getItemPeca().getIdentificacao() + ", " + reparo.getTempoVidaUtil() + ", " + reparo.getRestauro() + ")";
+        sql = "insert into reparopeca values ('" + DateConversion.dateToString(reparo.getDataRealizacao()) + " " + reparo.getDataRealizacao().getHours() + ":" + reparo.getDataRealizacao().getMinutes() + ":" + reparo.getDataRealizacao().getSeconds() + "', " + reparo.getPeca().getItemPeca().getIdentificacao() + ", " + reparo.getTempoVidaUtil() + ", " + reparo.getRestauro() + ")";
 
         try {
 
@@ -684,7 +686,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
 
         insertManutencao(codSem, sub);
 
-        sql = "insert into substituicao values ('" + sub.getDataRealizacao().getDate() + "/" + sub.getDataRealizacao().getMonth() + "/" + (sub.getDataRealizacao().getYear() + 1900) + " " + sub.getDataRealizacao().getHours() + ":" + sub.getDataRealizacao().getMinutes() + ":" + sub.getDataRealizacao().getSeconds() + "')";
+        sql = "insert into substituicao values ('" + DateConversion.dateToString(sub.getDataRealizacao()) + " " + sub.getDataRealizacao().getHours() + ":" + sub.getDataRealizacao().getMinutes() + ":" + sub.getDataRealizacao().getSeconds() + "')";
 
         try {
 
@@ -695,8 +697,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
             throw new InsercaoException("Não foi possível adcionar a substituição " + sub + " no banco de dados", sqle);
         }
 
-        sql = "insert into substituicaopeca values ('" + sub.getDataRealizacao().getDate() + "/" + sub.getDataRealizacao().getMonth() + "/"
-                + (sub.getDataRealizacao().getYear() + 1900) + " " + sub.getDataRealizacao().getHours() + ":" + sub.getDataRealizacao().getMinutes()
+        sql = "insert into substituicaopeca values ('" + DateConversion.dateToString(sub.getDataRealizacao()) + " " + sub.getDataRealizacao().getHours() + ":" + sub.getDataRealizacao().getMinutes()
                 + ":" + sub.getDataRealizacao().getSeconds() + "', "  + sub.getPeca().getItemPeca().getIdentificacao() + ", " 
                 + sub.getPecaSubstituta().getIdentificacao() + ", " + sub.getTempoVidaUtil() + ", " + sub.getRestauro() + ")";
 
@@ -707,7 +708,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
         } catch (SQLException sqle) {
             System.out.println(sqle);
 
-            throw new InsercaoException("Não foi possível adcionar o a substituição da peça " + sub.getPeca().getItemPeca().getIdentificacao()
+            throw new InsercaoException("Não foinull possível adcionar o a substituição da peça " + sub.getPeca().getItemPeca().getIdentificacao()
                     + "pela peça " + sub.getPecaSubstituta().getIdentificacao() + " no banco de dados", sqle);
         }
 
@@ -726,8 +727,7 @@ public class DBSemeadora implements RepositorioSemeadoras {
             throw new AtualizacaoException("Não foi possível desalocar a peça " + sub.getPeca().getItemPeca().getIdentificacao(), sqle);
         }
 
-        sql = "update itempeca set datainclusao='" + sub.getDataRealizacao().getDate() + "/" + sub.getDataRealizacao().getMonth() + "/"
-                + (sub.getDataRealizacao().getYear() + 1900) + "' , codsem=" + sub.getSemeadora().getIdentificacao() + ", coddivisao="
+        sql = "update itempeca set datainclusao='" + DateConversion.dateToString(sub.getDataRealizacao()) + "' , codsem=" + sub.getSemeadora().getIdentificacao() + ", coddivisao="
                 + sub.getPeca().getDivisao().getIdentificao() + "where coditempeca=" + sub.getPecaSubstituta().getIdentificacao();
 
         try {

@@ -30,7 +30,7 @@ public class Peca {
 
     public Peca(String fabricante, TipoPeca tipo) throws ValorNuloException  {
 
-        this(1, fabricante, tipo);
+        this(codPeca+1, fabricante, tipo);
         this.identificacao = nextCodePeca();
     }
 

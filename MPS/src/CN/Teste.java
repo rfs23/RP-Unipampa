@@ -33,7 +33,10 @@ public class Teste {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+      
+        //cSem.listSemeadoras();
+        cSem.selectSemeadora(1);
+        System.out.println(CadastroSemeadoras.semeadoras.values());
     }
 
     public Teste(String teste) {

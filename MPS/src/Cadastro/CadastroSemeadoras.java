@@ -47,8 +47,6 @@ public class CadastroSemeadoras {
         verificaCompletudePecasSemeadora(semeadora);
 
         this.repSemeadoras.insertSemeadora(semeadora);
-
-        System.out.println("Semeadora adicionada com sucesso!");
     }
 
     public void deleteSemeadora(int codSemeadora) throws DelecaoException {

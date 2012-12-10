@@ -106,7 +106,7 @@ public enum TipoPeca {
         @Override
         public String toString(){
             
-            return "150";
+            return "Rolamento";
         }
     },
     

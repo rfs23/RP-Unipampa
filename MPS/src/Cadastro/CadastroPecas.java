@@ -36,7 +36,7 @@ public class CadastroPecas {
         if (peca != null){
             
             repPeca.insertPeca(peca);
-            pecas.put(peca.getIdentificacao(), peca);
+            //pecas.put(peca.getIdentificacao(), peca);
         }
     }
 

@@ -44,7 +44,7 @@ public class CadastroItensPeca {
         if(itemPeca != null){
             
             repItemPeca.insertItemPeca(itemPeca);
-            itensPeca.put(itemPeca.getIdentificacao(), itemPeca);
+            //itensPeca.put(itemPeca.getIdentificacao(), itemPeca);
         }
     }
 
