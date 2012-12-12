@@ -13,10 +13,14 @@ import Repositório.AcessoPostgres;
 import Repositório.DBItemPeca;
 import Repositório.DBPeca;
 import Repositório.DBSemeadora;
+import com.mysql.jdbc.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *

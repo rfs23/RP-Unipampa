@@ -1,12 +1,9 @@
 package CN;
 
-import Cadastro.CadastroSemeadoras;
 import Exceções.ConsultaException;
 import Exceções.DataInvalidaException;
 import Exceções.TempoVidaUtilForaDosLimitesException;
 import Exceções.ValorNuloException;
-import Repositório.AcessoPostgres;
-import Repositório.DBSemeadora;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +24,12 @@ public class Divisao {
      }*/
     public Divisao(int codDivisao, String nome, TipoAlocacao tipoAloc) throws ValorNuloException {
 
+        this(nome, tipoAloc);
         setIdentificao(codDivisao);
+    }
+    
+    public Divisao(String nome, TipoAlocacao tipoAloc) throws ValorNuloException {
+
         setNome(nome);
         setTipoAloc(tipoAloc);
 

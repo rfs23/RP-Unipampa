@@ -4,8 +4,11 @@
  */
 package GUI.InternalFrames;
 
+import CN.AlocacaoPeca;
+import CN.Divisao;
 import CN.ItemPeca;
 import CN.Semeadora;
+import CN.TipoAlocacao;
 import CN.TipoPeca;
 import Cadastro.CadastroItensPeca;
 import Cadastro.CadastroSemeadoras;
@@ -24,9 +27,11 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDesktopPane;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -43,7 +48,7 @@ import javax.swing.text.MaskFormatter;
  *
  * @author rafael
  */
-public class IFrameCadSemeadora extends StartableInternalFrame {
+public class IFrameCadSemeadora extends StartableInternalFrame implements FrameObserver {
 
     private JPanel panelButtons;
     private JButton btConcluir;
@@ -62,16 +67,16 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
     private JFormattedTextField ftfDataRegistro;
     private JTextField tfModelo;
     private JLabel lbDiscoDosador;
-    private JComboBox<Object> cbDiscoDosador;
+    private JComboBox<ModelString> cbDiscoDosador;
     private JScrollPane jScrollPane1;
-    private JList<Object> listDivisoes;
+    private JList<ModelString> listDivisoes;
     private JButton btAddDivisao;
     private JButton btAddDisco;
     private JButton btReloadDiscoDosador;
     private static final IFrameCadSemeadora frame = new IFrameCadSemeadora();
     private static CadastroSemeadoras cadSem = new PersistenciaPostgres().getPersistenciaSemeadora();
     private static CadastroItensPeca cadItemPeca = new PersistenciaPostgres().getPersistenciaItensPeca();
-    private static Semeadora sem;    
+    private static Semeadora sem;
 
     private IFrameCadSemeadora() {
 
@@ -92,26 +97,18 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
         panelDivisoesSemeadora = new JPanel(new GridBagLayout());
         tfModelo = new JTextField();
         lbDiscoDosador = new JLabel("Disco Dosador: ");
-        cbDiscoDosador = new JComboBox();
+        cbDiscoDosador = new JComboBox<ModelString>();
         listDivisoes = new JList();
         jScrollPane1 = new JScrollPane(listDivisoes);
         btAddDivisao = new JButton("Adicionar Divisão");
         btAddDisco = new JButton("Adicionar Item");
         btReloadDiscoDosador = new JButton(new ImageIcon(this.getClass().getResource("../Button Reload.png")));
 
+
         tfCodSem.setEditable(false);
 
         panelDadosSemeadora.setBorder(new TitledBorder("Dados da Semeadora"));
         panelDivisoesSemeadora.setBorder(new TitledBorder("Divisões"));
-
-        panelButtons.add(btCancelar);
-        btCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                dispose();
-            }
-        });
 
         panelButtons.add(btConcluir);
         btConcluir.addActionListener(new ActionListener() {
@@ -126,6 +123,14 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
             }
         });
 
+        panelButtons.add(btCancelar);
+        btCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                dispose();
+            }
+        });
 
         configuraPanelDadosSemeadora();
         configuraPanelDivisoes();
@@ -140,7 +145,7 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
         this.setIconifiable(true);
         this.setClosable(true);
         this.setResizable(true);
-        this.setSize(500, 500);
+        this.setSize(550, 500);
         this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
         this.setPreferredSize(new Dimension(500, 500));
     }
@@ -251,7 +256,7 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(10, 5, 0, 0);
-        btReloadDiscoDosador.setPreferredSize(new Dimension(20, 20));
+        btReloadDiscoDosador.setPreferredSize(new Dimension(30, 30));
         panelDivisoesSemeadora.add(btReloadDiscoDosador, gbc);
 
         gbc.gridx = 3;
@@ -260,21 +265,23 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
         gbc.insets = new Insets(10, 5, 0, 0);
         panelDivisoesSemeadora.add(btAddDisco, gbc);
 
-        gbc.gridx = 4;
+        gbc.gridx = 3;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(10, 5, 0, 0);
+        btAddDivisao.addActionListener(new AddDivisaoListener());
         panelDivisoesSemeadora.add(btAddDivisao, gbc);
 
         gbc = new java.awt.GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.gridwidth = 5;
+        gbc.gridwidth = 4;
         gbc.fill = java.awt.GridBagConstraints.BOTH;
         gbc.anchor = java.awt.GridBagConstraints.WEST;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
+        //gbc.weightx = 1.0;
+        //gbc.weighty = 1.0;
         gbc.insets = new java.awt.Insets(5, 10, 0, 0);
+        listDivisoes.setModel(new DefaultListModel<ModelString>());
         panelDivisoesSemeadora.add(jScrollPane1, gbc);
     }
 
@@ -282,20 +289,22 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
     public void startFrame() {
 
         sem = new Semeadora("a", "b", (new Date().getYear() + 1900));
-        
+
         this.tfCodSem.setText("" + cadSem.gerarCódigoSemeadora());
         this.ftfDataRegistro.setText(Utilitários.DateConversion.dateToString(new Date()));
         this.tfMarcaSem.setText("");
         this.tfModelo.setText("");
         ftfAnoSem.setText("");
+        listDivisoes.setModel(new DefaultListModel<ModelString>());
         preencheComboDiscoDosador();
         this.ftfAnoSem.requestFocus();
+
     }
 
     private void preencheComboDiscoDosador() {
 
+        cbDiscoDosador.removeAllItems();
         cadItemPeca.selectItensPecaNaoAlocadosByTipo(TipoPeca.DISCO_DOSADOR);
-
 
         for (ItemPeca ip : CadastroItensPeca.itensPeca.values()) {
 
@@ -305,22 +314,24 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
             sb.append(ip.getPeca().getFabricante());
             sb.append(" - ");
             sb.append(ip.getTempoVidaUtilRestante());
+            System.out.println(sb.toString());
 
             ModelString msIP = new ModelString(sb.toString(), ip.getIdentificacao());
-            this.cbDiscoDosador.addItem(ip);
+            this.cbDiscoDosador.addItem(msIP);
         }
     }
 
     private boolean inserirSemeadora() {
 
-        if (verificaAno(ftfAnoSem) && verificaCampoVazio(tfModelo) && verificaData(ftfDataRegistro)  && verificaCampoVazio(tfMarcaSem)) {
+        if (verificaAno(ftfAnoSem) && verificaCampoVazio(tfModelo) && verificaData(ftfDataRegistro) && verificaCampoVazio(tfMarcaSem) && verificaItemComboSelecionado(cbDiscoDosador)) {
 
             int cod = Integer.parseInt(tfCodSem.getText());
             int ano = Integer.parseInt(ftfAnoSem.getText());
             String marca = tfMarcaSem.getText();
             String modelo = tfModelo.getText();
             Date dataRegistro = DateConversion.stringToDate(ftfDataRegistro.getText());
-
+            ItemPeca ip = cadItemPeca.selectItemPeca(cbDiscoDosador.getItemAt(cbDiscoDosador.getSelectedIndex()).getCodigo());
+            
             try {
 
                 sem.setAno(ano);
@@ -328,6 +339,9 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
                 sem.setMarca(marca);
                 sem.setModelo(modelo);
                 sem.setIdentificacao(cod);
+                int codDiv = sem.nextCodeDivisao();
+                sem.addDivisao(codDiv, "Semeadora", TipoAlocacao.Semeadora);
+                sem.addPeca(codDiv, ip);
             } catch (Exception ex) {
 
                 JOptionPane.showMessageDialog(null, ex.getMessage(), "Dado Incorreto", JOptionPane.WARNING_MESSAGE);
@@ -395,5 +409,89 @@ public class IFrameCadSemeadora extends StartableInternalFrame {
             tfData.requestFocus();
             return false;
         }
+    }
+
+    private boolean verificaItemComboSelecionado(JComboBox combo) {
+
+        if (combo.getSelectedIndex() == -1) {
+
+            JOptionPane.showMessageDialog(null, "Deve-se selecionar um item!", "Item não selecionado", JOptionPane.WARNING_MESSAGE);
+            combo.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void update(JInternalFrame frame, Object obj) {
+
+        this.setVisible(true);
+
+        if (frame instanceof IFrameAddDivisao) {
+
+            if (obj != null && obj instanceof Divisao) {
+
+                Divisao div = (Divisao) obj;
+                div.setNome(div.getTipoAloc() == TipoAlocacao.Linha ? "Linha " + sem.nextCodeDivisao() : "");
+                div.setIdentificao(sem.nextCodeDivisao());
+                addDivisao(div);
+                ((DefaultListModel<ModelString>) listDivisoes.getModel()).addElement(new ModelString("" + div.getIdentificao() + " - " + div.getNome(), div.getIdentificao()));
+            }
+        }
+
+        ativarAcoes(true);
+    }
+
+    private void addDivisao(Divisao div) {
+
+        sem.addDivisao(div.getIdentificao(), div.getNome(), div.getTipoAloc());
+        for (AlocacaoPeca aloc : div.listarPecas()) {
+
+            sem.addPeca(div.getIdentificao(), aloc.getItemPeca());
+        }
+    }
+
+    private IFrameCadSemeadora getThis() {
+
+        return this;
+    }
+
+    private void centralizarFrame(JInternalFrame iFrame) {
+
+        Dimension dmDesk = this.getParent().getSize();
+        Dimension dmFrame = iFrame.getSize();
+
+        iFrame.setLocation((dmDesk.width - dmFrame.width) / 2, (dmDesk.height - dmFrame.height) / 2);
+    }
+
+    private class AddDivisaoListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            //setVisible(false);
+            IFrameAddDivisao.getInstance().addObserver(getThis());
+
+            JDesktopPane jdp = (JDesktopPane) getThis().getParent();
+            jdp.add(IFrameAddDivisao.getInstance());
+            centralizarFrame(IFrameAddDivisao.getInstance());
+            IFrameAddDivisao.getInstance().setVisible(true);
+            IFrameAddDivisao.getInstance().startFrame();
+
+            ativarAcoes(false);
+        }
+    }
+
+    private void ativarAcoes(boolean ativ) {
+
+        btConcluir.setEnabled(ativ);
+        btCancelar.setEnabled(ativ);
+        this.setClosable(ativ);
+    }
+
+    public static Semeadora getSemeadora() {
+
+        return sem;
     }
 }

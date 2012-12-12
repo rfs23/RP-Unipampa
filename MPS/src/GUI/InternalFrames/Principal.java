@@ -31,7 +31,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
  */
 public class Principal extends JFrame {
 
-    JDesktopPaneWithBackground jdp;
+    private JDesktopPaneWithBackground jdp;
     public static CadastroSemeadoras cadSem;
     public static CadastroItensPeca cadItemPeca;
     public static CadastroPecas cadPeca;
@@ -78,8 +78,9 @@ public class Principal extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                addJInternalFrame(IFrameCadSemeadora.getInstance());
-                centralizarInternalFrame(IFrameCadSemeadora.getInstance());
+                jdp.add(IFrameCadSemeadora.getInstance());
+                jdp.centralizarInternalFrame(IFrameCadSemeadora.getInstance());
+                IFrameCadSemeadora.getInstance().startFrame();
             }
         });
 
@@ -97,39 +98,4 @@ public class Principal extends JFrame {
         this.setJMenuBar(menus);
     }
 
-    public void addJInternalFrame(StartableInternalFrame jif) {
-
-        if (!containsJInternalFrame(jif)) {
-
-            this.jdp.add(jif);
-        }
-
-    }
-
-    private boolean containsJInternalFrame(StartableInternalFrame jif) {
-
-        for (JInternalFrame intFrame : jdp.getAllFrames()) {
-
-            if (intFrame.equals(jif)) {
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void centralizarInternalFrame(StartableInternalFrame iFrame) {
-
-        Dimension dmDesk = this.jdp.getSize();
-        Dimension dmFrame = iFrame.getSize();
-
-        iFrame.setLocation((dmDesk.width - dmFrame.width) / 2, (dmDesk.height - dmFrame.height) / 2);
-        
-        if(containsJInternalFrame(iFrame)){
-            
-            iFrame.setVisible(true);
-            iFrame.startFrame();
-        }
-    }
 }

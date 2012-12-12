@@ -4,22 +4,17 @@
  */
 package GUI.InternalFrames;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author rafael
  */
-public class IFrameConsSemeadora extends StartableInternalFrame{
+public interface ObservableFrame {
     
+    public void addObserver(FrameObserver obs);
     
+    public void notifyFrameObservers();
     
-    
-    
-    
-    
-    @Override
-    public void startFrame(){
-        
-        
-    }
     
 }

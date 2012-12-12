@@ -93,7 +93,7 @@ public class AcessoPostgres implements AcessoBD{
             throw sqle;
         }catch (ClassNotFoundException cnfe){
             
-            cnfe.printStackTrace();
+            
         }
         
         return con;

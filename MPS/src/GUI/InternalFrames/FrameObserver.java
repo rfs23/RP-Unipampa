@@ -4,14 +4,13 @@
  */
 package GUI.InternalFrames;
 
+import javax.swing.JInternalFrame;
+
 /**
  *
  * @author rafael
  */
-public class Main {
- 
-    public static void main (String[] args){
-        
-        Principal principal = new Principal();  
-    }
+public interface FrameObserver {
+    
+    public void update(JInternalFrame frame, Object obj);
 }
