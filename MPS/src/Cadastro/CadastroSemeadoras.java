@@ -115,7 +115,13 @@ public class CadastroSemeadoras {
 
         Semeadora sem = selectSemeadora(codSem);
 
-        if (sem.selecionarAtividade(codAtiv) == null) {
+        try {
+
+            if (sem.selecionarAtividade(codAtiv) == null) {
+
+                throw new NullPointerException("A atividade não foi realizada pela semeadora e, portanto, não pode ser registrada");
+            }
+        } catch (NullPointerException ex) {
 
             throw new NullPointerException("A atividade não foi realizada pela semeadora e, portanto, não pode ser registrada");
         }
@@ -131,46 +137,46 @@ public class CadastroSemeadoras {
             semeadoras.put(sem.getIdentificacao(), sem);
         }
     }
-    
-    public void cancelarAtividade(int codSem, int codAtividade, Date dataCancelamento){
-        
-        if(semeadoras.containsKey(codSem)){
-            
-            if(semeadoras.get(codSem).selecionarAtividade(codAtividade) != null){
-                
+
+    public void cancelarAtividade(int codSem, int codAtividade, Date dataCancelamento) {
+
+        if (semeadoras.containsKey(codSem)) {
+
+            if (semeadoras.get(codSem).selecionarAtividade(codAtividade) != null) {
+
                 this.repSemeadoras.cancelarAtividade(codSem, codAtividade, dataCancelamento);
                 semeadoras.get(codSem).cancelarAtividade(codAtividade);
             }
         }
     }
-    
-    public void registrarReparo(int codSem, Date dataReparo) throws NullPointerException, InsercaoException, AtualizacaoException{
-        
-        if(semeadoras.containsKey(codSem)){
-            
+
+    public void registrarReparo(int codSem, Date dataReparo) throws NullPointerException, InsercaoException, AtualizacaoException {
+
+        if (semeadoras.containsKey(codSem)) {
+
             Semeadora sem = semeadoras.get(codSem);
-            
-            if(sem.selecionarManutencao(dataReparo) == null || !(sem.selecionarManutencao(dataReparo) instanceof Reparo)){
-                
+
+            if (sem.selecionarManutencao(dataReparo) == null || !(sem.selecionarManutencao(dataReparo) instanceof Reparo)) {
+
                 throw new NullPointerException("A semeadora não realizou reparo para a data informada");
             }
-            
-            this.repSemeadoras.registrarReparo(codSem, (Reparo)sem.selecionarManutencao(dataReparo));
+
+            this.repSemeadoras.registrarReparo(codSem, (Reparo) sem.selecionarManutencao(dataReparo));
         }
     }
-    
-    public void registrarSubstituicao(int codSem, Date dataSubstituicao) throws NullPointerException, InsercaoException, AtualizacaoException{
-        
-        if(semeadoras.containsKey(codSem)){
-            
+
+    public void registrarSubstituicao(int codSem, Date dataSubstituicao) throws NullPointerException, InsercaoException, AtualizacaoException {
+
+        if (semeadoras.containsKey(codSem)) {
+
             Semeadora sem = semeadoras.get(codSem);
-            
-            if(sem.selecionarManutencao(dataSubstituicao) == null || !(sem.selecionarManutencao(dataSubstituicao) instanceof SubstituicaoPeca)){
-                
+
+            if (sem.selecionarManutencao(dataSubstituicao) == null || !(sem.selecionarManutencao(dataSubstituicao) instanceof SubstituicaoPeca)) {
+
                 throw new NullPointerException("A semeadora substituição de peça para a data informada");
             }
-            
-            this.repSemeadoras.registrarSubstituicao(codSem, (SubstituicaoPeca)sem.selecionarManutencao(dataSubstituicao));
+
+            this.repSemeadoras.registrarSubstituicao(codSem, (SubstituicaoPeca) sem.selecionarManutencao(dataSubstituicao));
         }
     }
 

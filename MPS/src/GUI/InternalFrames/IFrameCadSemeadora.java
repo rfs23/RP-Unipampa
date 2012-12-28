@@ -23,6 +23,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Level;
@@ -145,9 +146,8 @@ public class IFrameCadSemeadora extends StartableInternalFrame implements FrameO
         this.setIconifiable(true);
         this.setClosable(true);
         this.setResizable(true);
-        this.setSize(550, 500);
+        this.setSize(550, 520);
         this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        this.setPreferredSize(new Dimension(500, 500));
     }
 
     public static IFrameCadSemeadora getInstance() {
@@ -278,8 +278,6 @@ public class IFrameCadSemeadora extends StartableInternalFrame implements FrameO
         gbc.gridwidth = 4;
         gbc.fill = java.awt.GridBagConstraints.BOTH;
         gbc.anchor = java.awt.GridBagConstraints.WEST;
-        //gbc.weightx = 1.0;
-        //gbc.weighty = 1.0;
         gbc.insets = new java.awt.Insets(5, 10, 0, 0);
         listDivisoes.setModel(new DefaultListModel<ModelString>());
         panelDivisoesSemeadora.add(jScrollPane1, gbc);
@@ -314,7 +312,6 @@ public class IFrameCadSemeadora extends StartableInternalFrame implements FrameO
             sb.append(ip.getPeca().getFabricante());
             sb.append(" - ");
             sb.append(ip.getTempoVidaUtilRestante());
-            System.out.println(sb.toString());
 
             ModelString msIP = new ModelString(sb.toString(), ip.getIdentificacao());
             this.cbDiscoDosador.addItem(msIP);

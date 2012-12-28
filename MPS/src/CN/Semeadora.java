@@ -96,7 +96,6 @@ public class Semeadora extends Observable {
             throw new AnoInvalidoException("Ano superior ao atual", ano);
         }
         
-        
         this.ano = ano;
     }
 

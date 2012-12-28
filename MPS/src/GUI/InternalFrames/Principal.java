@@ -8,7 +8,6 @@ import Cadastro.CadastroItensPeca;
 import Cadastro.CadastroPecas;
 import Cadastro.CadastroSemeadoras;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -16,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -85,8 +83,13 @@ public class Principal extends JFrame {
         });
 
         JMenuItem rmSemeadora = new JMenuItem("Excluir Semeadora");
+        rmSemeadora.addActionListener(new openConsultaSemeadora());
+        
         JMenuItem chSemeadora = new JMenuItem("Alterar Semeadora");
+        chSemeadora.addActionListener(new openConsultaSemeadora());
+        
         JMenuItem consSemeadora = new JMenuItem("Consultar Semeadora");
+        consSemeadora.addActionListener(new openConsultaSemeadora());
 
         menuSemeadora.add(addSemeadora);
         menuSemeadora.add(rmSemeadora);
@@ -98,4 +101,18 @@ public class Principal extends JFrame {
         this.setJMenuBar(menus);
     }
 
+    
+    private class openConsultaSemeadora implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+            jdp.add(IFrameConsSemeadora.getInstance());
+            jdp.centralizarInternalFrame(IFrameConsSemeadora.getInstance());
+            IFrameConsSemeadora.getInstance().startFrame();
+            //IFrameConsSemeadora.getInstance().setVisible(true);
+        }
+        
+        
+    }
 }

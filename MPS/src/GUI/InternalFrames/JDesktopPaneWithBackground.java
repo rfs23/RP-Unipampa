@@ -24,10 +24,10 @@ public class JDesktopPaneWithBackground extends JDesktopPane {
     public Component add(Component comp) {
 
         if (comp instanceof JInternalFrame) {
-
+            
             if (!containsJInternalFrame((JInternalFrame) comp)) {
 
-                super.add(comp);
+                return super.add(comp);
             }
         }
 
