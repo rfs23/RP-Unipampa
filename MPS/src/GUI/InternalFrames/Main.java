@@ -9,9 +9,9 @@ package GUI.InternalFrames;
  * @author rafael
  */
 public class Main {
- 
-    public static void main (String[] args){
-        
-        Principal principal = new Principal();  
+
+    public static void main(String[] args) {
+
+        Principal principal = new Principal();
     }
 }

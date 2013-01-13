@@ -63,6 +63,7 @@ public class Principal extends JFrame {
             JOptionPane.showMessageDialog(null, "Não foi possível estabelecer conexão com o banco de dados (Postgres). Verifique se ele foi iniciado.", "Falha na conexão com Banco de Dados", JOptionPane.WARNING_MESSAGE);
             this.dispose();
         }
+        
 
         jdp.setLayout(null);
     }

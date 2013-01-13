@@ -27,7 +27,11 @@ public class JDesktopPaneWithBackground extends JDesktopPane {
             
             if (!containsJInternalFrame((JInternalFrame) comp)) {
 
-                return super.add(comp);
+                Component cpnt =  super.add(comp);
+                centralizarInternalFrame((JInternalFrame) comp);
+                this.moveToFront(comp);
+                comp.requestFocus();
+                return cpnt;
             }
         }
 

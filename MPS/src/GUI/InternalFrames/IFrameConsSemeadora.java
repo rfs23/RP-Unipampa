@@ -6,13 +6,16 @@ package GUI.InternalFrames;
 
 import CN.AlocacaoPeca;
 import CN.Divisao;
+import CN.ItemPeca;
 import CN.Semeadora;
 import Cadastro.CadastroItensPeca;
 import Cadastro.CadastroSemeadoras;
 import Exceções.AtualizacaoException;
+import Exceções.DelecaoException;
 import Utilitários.DateConversion;
 import Utilitários.ModelString;
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -206,9 +209,17 @@ public class IFrameConsSemeadora extends StartableInternalFrame {
 
                 if (listConsultaSemSemeadoras.getSelectedIndex() != -1) {
 
-                    if (JOptionPane.showConfirmDialog(null, "Deseja realmente excluir a semeadora? \n" + "Excluir a semeadora implica em perder todos as atividades e manutenções relaciondas a ela!", "Confirmação de exclusão", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    if (JOptionPane.showConfirmDialog(null, "Deseja realmente excluir a semeadora? \n" + "Excluir a semeadora implica em perder todos as atividades e manutenções relacionadas a ela!", "Confirmação de exclusão", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 
-                        cadSem.deleteSemeadora(obtemSemeadoraSelecionada().getIdentificacao());
+                        try {
+
+                            cadSem.deleteSemeadora(obtemSemeadoraSelecionada().getIdentificacao());
+                            JOptionPane.showMessageDialog(null, "Semeadora excluída", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (DelecaoException de) {
+
+                            JOptionPane.showMessageDialog(null, de.getMessage(), "Falha", JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.showMessageDialog(null, de.getRTException().getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        }
                         startFrame();
                     }
                 } else {
@@ -453,7 +464,20 @@ public class IFrameConsSemeadora extends StartableInternalFrame {
         panelDivPecasSemeadora.add(jScrollPane4, gridBagConstraints);
 
         btConsultaSemDadosPeca.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                if (listConsultaSemSemeadoras.getSelectedIndex() != -1 && listConsultaSemPeca.getSelectedIndex() != -1) {
+
+                    Container cont = getThis().getParent();
+                    Semeadora sem = cadSem.selectSemeadora(listConsultaSemSemeadoras.getSelectedValue().getCodigo());
+                    IFrameConsPecaSemeadora consPeca = new IFrameConsPecaSemeadora(sem.selecionarPeca(listConsultaSemPeca.getSelectedValue().getCodigo()));
+                    cont.add(consPeca);
+                    consPeca.setVisible(true);
+                }else{
+                    
+                    JOptionPane.showMessageDialog(null, "Deve-se selecionar uma peça antes!", "Peça não selecionada", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
 
@@ -644,7 +668,7 @@ public class IFrameConsSemeadora extends StartableInternalFrame {
                 JOptionPane.showMessageDialog(null, ae.getException().getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            
+
             return true;
         }
 
@@ -696,5 +720,10 @@ public class IFrameConsSemeadora extends StartableInternalFrame {
             tfData.requestFocus();
             return false;
         }
+    }
+
+    private IFrameConsSemeadora getThis() {
+
+        return this;
     }
 }
