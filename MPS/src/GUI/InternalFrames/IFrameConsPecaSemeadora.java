@@ -19,19 +19,19 @@ import javax.swing.JTextField;
  */
 public class IFrameConsPecaSemeadora extends JInternalFrame {
 
-    JLabel lbDadosPeçaTipo;
-    JTextField tfDadosPeçaTipo;
-    JLabel lbDadosPeçaFabricante;
-    JTextField tfDadosPeçaFabricante;
-    JLabel lbDadosPeçaAno;
-    JTextField tfDadosPeçaAno;
-    JLabel lbDadosPeçaDataAquis;
-    JTextField tfDadosPeçaDataAquis;
-    JLabel lbDadosPeçaTVUR;
-    JTextField tfdadosPeçaTVUR;
-    JButton btDadosPeçaSair;
-    JLabel lbDadosPecaDataAloc;
-    JTextField tfDadosPeçaDataAloc;
+    private JLabel lbDadosPeçaTipo;
+    private JTextField tfDadosPeçaTipo;
+    private JLabel lbDadosPeçaFabricante;
+    private JTextField tfDadosPeçaFabricante;
+    private JLabel lbDadosPeçaAno;
+    private JTextField tfDadosPeçaAno;
+    private JLabel lbDadosPeçaDataAquis;
+    private JTextField tfDadosPeçaDataAquis;
+    private JLabel lbDadosPeçaTVUR;
+    private JTextField tfdadosPeçaTVUR;
+    private JButton btDadosPeçaSair;
+    private JLabel lbDadosPecaDataAloc;
+    private JTextField tfDadosPeçaDataAloc;
 
     public IFrameConsPecaSemeadora(AlocacaoPeca peca) {
 
